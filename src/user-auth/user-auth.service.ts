@@ -31,7 +31,7 @@ export class UserAuthService {
       throw new Error('An error occurred while registering the user');
     }
   }
-  async loginUser(email: string, password: string): Promise<string> {
+  async loginUser(email: string, password: string): Promise<any> {
     try {
       const user = await this.userModel.findOne({ email });
       console.log('USUARIO ENCONTRADO:', user);
@@ -45,7 +45,12 @@ export class UserAuthService {
       const payload = { userId: user._id };
       const token = this.jwtService.sign(payload);
       console.log('token:', token);
-      return token;
+      return {
+        token,
+        full_name: user.name + " " + user.last_name,
+        role: user.role,
+        email: user.email
+      };
     } catch (error) {
       console.log(error);
       throw new UnauthorizedException('An error occurred while logging in');

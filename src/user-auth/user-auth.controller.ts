@@ -41,8 +41,8 @@ export class UserAuthController {
     @Body() body: { email: string; password: string },
   ): Promise<{ message: string; token: string }> {
     const { email, password } = body;
-    const token = await this.userAuthService.loginUser(email, password);
-    return { message: 'Login successful', token };
+    const respuesta = await this.userAuthService.loginUser(email, password);
+    return { message: 'Login successful', ...respuesta };
   }
 
   @Get('users')
