@@ -17,7 +17,8 @@ export class UserAuthService {
 
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(UserTrabajador.name) private userTrabajadorModel: Model<UserTrabajador>,
+    @InjectModel(UserTrabajador.name)
+    private userTrabajadorModel: Model<UserTrabajador>,
     private jwtService: JwtService,
   ) {}
 
@@ -47,9 +48,9 @@ export class UserAuthService {
       console.log('token:', token);
       return {
         token,
-        full_name: user.name + " " + user.last_name,
+        full_name: user.name + ' ' + user.last_name,
         role: user.role,
-        email: user.email
+        email: user.email,
       };
     } catch (error) {
       console.log(error);
@@ -79,12 +80,77 @@ export class UserAuthService {
     try {
       const { password, email, name, last_name, role } = body;
       const hash = await bcrypt.hash(password, 10);
-      const userModelResult = await this.userModel.create({ email, name, last_name, role, password: hash });
+      const userModelResult = await this.userModel.create({
+        email,
+        name,
+        last_name,
+        role,
+        password: hash,
+      });
       const userId = userModelResult._id;
-      await this.userTrabajadorModel.create({ ...body, password: hash, _id:userId });
+      await this.userTrabajadorModel.create({
+        ...body,
+        password: hash,
+        _id: userId,
+      });
       return { message: 'Trabajador registrado con exito!' };
     } catch (error) {
       throw new Error('An error occurred while registering the user');
+    }
+  }
+
+  async updateUser(
+    userId: string,
+    userData: User | UserTrabajador,
+  ): Promise<void> {
+    try {
+      const existingUser = await this.userModel.findById(userId);
+
+      if (!existingUser) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
+
+      const { password, ...updatedUserData } = userData;
+        const hash = await bcrypt.hash(password, 10);
+        await this.userModel.findByIdAndUpdate(userId, {
+          name: updatedUserData.name,
+          last_name: updatedUserData.last_name,
+          role: updatedUserData.role,
+          password: hash,
+        });
+
+
+      if (userData.role === 'trabajador') {
+        const existingTrabajador = await this.userTrabajadorModel.findById(userId);
+
+      if (!existingTrabajador) {
+        throw new NotFoundException('Trabajador no encontrado');
+      }
+      const hash = await bcrypt.hash(password, 10);
+      await this.userTrabajadorModel.findByIdAndUpdate(userId, {
+        ...updatedUserData,
+        password: hash,
+      });
+      }
+    } catch (error) {
+      throw new Error('An error occurred while updating the user');
+    }
+  }
+
+  async deleteUser(userId: string, role:string): Promise<void> {
+    try {
+      const existingUser = await this.userModel.findById(userId);
+
+      if (!existingUser) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
+
+      await this.userModel.findByIdAndRemove(userId);
+      if (role === 'trabajador') {
+        await this.userTrabajadorModel.findByIdAndRemove(userId);
+      }
+    } catch (error) {
+      throw new Error('An error occurred while deleting the user');
     }
   }
 }
