@@ -10,6 +10,7 @@ import {
   Param,
   Delete,
   Query,
+  ParamData,
 } from '@nestjs/common';
 import { UserAuthService } from './user-auth.service';
 import { User } from './schemas/user-auth.schema';
@@ -74,6 +75,8 @@ export class UserAuthController {
     }
   }
 
+  
+
   @Delete('users/:id')
   @UseGuards(AuthGuard)
   async deleteUser(
@@ -115,6 +118,25 @@ export class UserAuthController {
       const user = await this.userAuthService.getUserById(request.user.userId);
       if (user.role === 'superAdmin') {
         return this.userAuthService.getUsers();
+      } else {
+        throw new UnauthorizedException(
+          'No tienes permiso para acceder a esta ruta.',
+        );
+      }
+    } catch (error) {
+      throw new UnauthorizedException(
+        'No tienes permiso para acceder a esta ruta.',
+      );
+    }
+  }
+
+  @Get('user/:id')
+  @UseGuards(AuthGuard)
+  async getUser(@Req() request: Request, @Param('id') id: string): Promise<User> {
+    try {
+      const user = await this.userAuthService.getUserById(request.user.userId);
+      if (user.role === 'superAdmin') {
+        return this.userAuthService.getUserById(id);
       } else {
         throw new UnauthorizedException(
           'No tienes permiso para acceder a esta ruta.',

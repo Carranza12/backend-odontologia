@@ -71,11 +71,16 @@ export class UserAuthService {
   async getUserById(userId: string): Promise<User> {
     try {
       const user = await this.userModel.findById(userId).exec();
+      if(user.role === "trabajador"){
+        const trabajador = await this.userTrabajadorModel.findById(userId).exec();
+        return trabajador;
+      }
       return user;
     } catch (error) {
       throw new NotFoundException('Usuario no encontrado');
     }
   }
+
   async registerTrabajador(body: any) {
     try {
       const { password, email, name, last_name, role } = body;
