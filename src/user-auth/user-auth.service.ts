@@ -30,11 +30,23 @@ export class UserAuthService {
       const { password } = userData;
       const hash = await bcrypt.hash(password, 10);
 
+      const uploadsFolderPath = path.join(__dirname, '..', 'uploads');
+      console.log("uploadsFolderPath:", uploadsFolderPath)
+      if (!fs.existsSync(uploadsFolderPath)) {
+        console.log('Creando la carpeta "uploads"...');
+        fs.mkdirSync(uploadsFolderPath);
+      }
+      
+      if (profileImage) {
+        const imageFileName = profileImage.originalname;
+        const imagePath = path.join(uploadsFolderPath, imageFileName);
+        fs.writeFileSync(imagePath, profileImage.buffer);
+        userData.profileImage = `uploads/${imageFileName}`;
+      }
+
       const user = new this.userModel({ ...userData, password: hash });
 
-      if (profileImage) {
-        user.profileImage = "uploads/" + profileImage.originalname;
-      }
+    
 
       await user.save();
       return { message: 'Usuario registrado con éxito!' };
