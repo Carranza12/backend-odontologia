@@ -18,6 +18,9 @@ export class User {
 
   @Prop()
   role: string;
+
+  @Prop()
+  profileImage: string;
 }
 
 export type UserDocument = User & Document;

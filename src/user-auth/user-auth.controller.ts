@@ -11,12 +11,15 @@ import {
   Delete,
   Query,
   ParamData,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserAuthService } from './user-auth.service';
 import { User } from './schemas/user-auth.schema';
 import { AuthGuard } from './auth.guard';
 import { Request } from 'express';
 import { UserTrabajador } from './schemas/user-trabajador.schema';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('api/auth')
 export class UserAuthController {
@@ -24,26 +27,32 @@ export class UserAuthController {
 
   @Post('register')
   @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('profileImage'))
   async registerUser(
-    @Body() body: User | UserTrabajador,
+    @UploadedFile() profileImage: any,
     @Req() request: Request,
   ): Promise<{ message: string }> {
     try {
       const currentUser = await this.userAuthService.getUserById(
         request.user.userId,
       );
+      console.log("usuario actual:", currentUser)
       if (currentUser.role !== 'superAdmin') {
         throw new UnauthorizedException(
           'No tienes permiso para registrar nuevos usuarios.',
         );
       }
+      
+      const body = request.body;
+      
       if (body.role === 'trabajador') {
-        return await this.userAuthService.registerTrabajador(body);
+        return await this.userAuthService.registerTrabajador(body, profileImage);
       }
       if (body.role === 'superAdmin') {
-        return await this.userAuthService.registerUser(body);
+        return await this.userAuthService.registerUser(body, profileImage);
       }
     } catch (error) {
+      console.log("error:", error)
       throw new UnauthorizedException(
         'No tienes permiso para registrar nuevos usuarios.',
       );
@@ -132,7 +141,7 @@ export class UserAuthController {
 
   @Get('user/:id')
   @UseGuards(AuthGuard)
-  async getUser(@Req() request: Request, @Param('id') id: string): Promise<User> {
+  async getUser(@Req() request: Request, @Param('id') id: string): Promise<User | UserTrabajador> {
     try {
       const user = await this.userAuthService.getUserById(request.user.userId);
       if (user.role === 'superAdmin') {

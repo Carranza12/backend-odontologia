@@ -27,6 +27,9 @@ export class UserTrabajador {
   @Prop()
   puesto: string;
 
+  @Prop()
+  profileImage: string;
+
 }
 
 export type UserDocument = UserTrabajador & Document;
