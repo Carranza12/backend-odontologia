@@ -62,6 +62,7 @@ export class UserAuthService {
         full_name: user.name + ' ' + user.last_name,
         role: user.role,
         email: user.email,
+        profileImage: user.profileImage
       };
     } catch (error) {
       console.log(error);
