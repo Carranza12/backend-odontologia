@@ -6,8 +6,6 @@ import * as path from 'path';
 
 async function bootstrap() {
   const app:any = await NestFactory.create(AppModule);
-
-  app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
   
   app.enableCors({
     origin: 'http://localhost:4200',

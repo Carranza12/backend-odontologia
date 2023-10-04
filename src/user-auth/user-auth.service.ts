@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserTrabajador } from './schemas/user-trabajador.schema';
 import * as path from 'path';
 import * as fs from 'fs';
+import { createWriteStream } from 'fs';
 
 @Injectable()
 export class UserAuthService {
@@ -23,7 +24,7 @@ export class UserAuthService {
     @InjectModel(UserTrabajador.name)
     private userTrabajadorModel: Model<UserTrabajador>,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async registerUser(userData: User, profileImage: any): Promise<{ message: string }> {
     try {
@@ -36,7 +37,7 @@ export class UserAuthService {
         console.log('Creando la carpeta "uploads"...');
         fs.mkdirSync(uploadsFolderPath);
       }
-      
+
       if (profileImage) {
         const imageFileName = profileImage.originalname;
         const imagePath = path.join(uploadsFolderPath, imageFileName);
@@ -46,7 +47,7 @@ export class UserAuthService {
 
       const user = new this.userModel({ ...userData, password: hash });
 
-    
+
 
       await user.save();
       return { message: 'Usuario registrado con éxito!' };
@@ -54,7 +55,7 @@ export class UserAuthService {
       throw new BadRequestException('Error al registrar al usuario');
     }
   }
-  
+
   async loginUser(email: string, password: string): Promise<any> {
     try {
       const user = await this.userModel.findOne({ email });
@@ -95,7 +96,7 @@ export class UserAuthService {
   async getUserById(userId: string): Promise<User | UserTrabajador> {
     try {
       const user = await this.userModel.findById(userId).exec();
-      if(user.role === "trabajador"){
+      if (user.role === "trabajador") {
         const trabajador = await this.userTrabajadorModel.findById(userId).exec();
         return trabajador;
       }
@@ -110,18 +111,13 @@ export class UserAuthService {
       const { password, email, name, last_name, role } = body;
       const hash = await bcrypt.hash(password, 10);
 
-      const uploadsFolderPath = path.join(__dirname, '..', 'uploads');
-      console.log("uploadsFolderPath:", uploadsFolderPath)
-      if (!fs.existsSync(uploadsFolderPath)) {
-        console.log('Creando la carpeta "uploads"...');
-        fs.mkdirSync(uploadsFolderPath);
-      }
-      
       if (profileImage) {
-        const imageFileName = profileImage.originalname;
-        const imagePath = path.join(uploadsFolderPath, imageFileName);
-        fs.writeFileSync(imagePath, profileImage.buffer);
-        body.profileImage = `uploads/${imageFileName}`;
+        const destinationPath = '../public/users/' + profileImage.originalname;
+        const writeStream = createWriteStream(destinationPath);
+        profileImage.stream.pipe(writeStream);
+        const absolutePath = path.resolve(destinationPath);
+        console.log("ABSOLUTE PATH:", absolutePath)
+        body.profileImage = absolutePath;
       }
       const userModelResult = await this.userModel.create({
         email,
@@ -157,34 +153,34 @@ export class UserAuthService {
       }
 
       const { password, ...updatedUserData } = userData;
-        const hash = await bcrypt.hash(password, 10);
+      const hash = await bcrypt.hash(password, 10);
 
-        await this.userModel.findByIdAndUpdate(userId, {
-          name: updatedUserData.name,
-          last_name: updatedUserData.last_name,
-          role: updatedUserData.role,
-          password: hash,
-        });
+      await this.userModel.findByIdAndUpdate(userId, {
+        name: updatedUserData.name,
+        last_name: updatedUserData.last_name,
+        role: updatedUserData.role,
+        password: hash,
+      });
 
 
       if (userData.role === 'trabajador') {
         const existingTrabajador = await this.userTrabajadorModel.findById(userId);
 
-      if (!existingTrabajador) {
-        throw new NotFoundException('Trabajador no encontrado');
-      }
-      const hash = await bcrypt.hash(password, 10);
-      await this.userTrabajadorModel.findByIdAndUpdate(userId, {
-        ...updatedUserData,
-        password: hash,
-      });
+        if (!existingTrabajador) {
+          throw new NotFoundException('Trabajador no encontrado');
+        }
+        const hash = await bcrypt.hash(password, 10);
+        await this.userTrabajadorModel.findByIdAndUpdate(userId, {
+          ...updatedUserData,
+          password: hash,
+        });
       }
     } catch (error) {
       throw new Error('An error occurred while updating the user');
     }
   }
 
-  async deleteUser(userId: string, role:string): Promise<void> {
+  async deleteUser(userId: string, role: string): Promise<void> {
     try {
       const existingUser = await this.userModel.findById(userId);
 
