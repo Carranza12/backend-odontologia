@@ -29,21 +29,26 @@ export class UserAuthController {
 
   @Post('register')
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('profileImage', {
-    storage: diskStorage({
-      destination: './src/assets/avatars',
-      filename: renameImage,
+  @UseInterceptors(
+    FileInterceptor('profileImage', {
+      storage: diskStorage({
+        destination: './src/assets/avatars',
+        filename: renameImage,
+      }),
+      fileFilter,
     }),
-    fileFilter
-  }))
+  )
   async registerUser(
     @UploadedFile() profileImage: Express.Multer.File,
     @Req() request: Request,
   ): Promise<{ message: string }> {
     try {
-      return await this.userAuthService.registerTrabajador(request, profileImage);
+      return await this.userAuthService.registerTrabajador(
+        request,
+        profileImage,
+      );
     } catch (error) {
-      console.log("error:", error)
+      console.log('error:', error);
       throw new UnauthorizedException(
         'No tienes permiso para registrar nuevos usuarios.',
       );
@@ -54,18 +59,21 @@ export class UserAuthController {
   @UseGuards(AuthGuard)
   async updateUser(
     @Param('id') userId: string,
-    @Body() body: User | UserTrabajador,
+    @Body() body: User,
     @Req() request: Request,
   ): Promise<{ message: string }> {
     try {
       const currentUser = await this.userAuthService.getUserById(
         request.user.userId,
       );
-      if (currentUser.role !== 'superAdmin') {
-        throw new UnauthorizedException(
-          'No tienes permiso para editar usuarios.',
-        );
-      }
+      currentUser.roles.forEach((role) => {
+        if (role !== 'superAdmin') {
+          throw new UnauthorizedException(
+            'No tienes permiso para editar usuarios.',
+          );
+        }
+      });
+
       await this.userAuthService.updateUser(userId, body);
       return { message: 'Usuario actualizado con éxito.' };
     } catch (error) {
@@ -74,8 +82,6 @@ export class UserAuthController {
       );
     }
   }
-
-  
 
   @Delete('users/:id')
   @UseGuards(AuthGuard)
@@ -88,11 +94,13 @@ export class UserAuthController {
       const currentUser = await this.userAuthService.getUserById(
         request.user.userId,
       );
-      if (currentUser.role !== 'superAdmin') {
-        throw new UnauthorizedException(
-          'No tienes permiso para eliminar usuarios.',
-        );
-      }
+      currentUser.roles.forEach((role) => {
+        if (role !== 'superAdmin') {
+          throw new UnauthorizedException(
+            'No tienes permiso para eliminar usuarios.',
+          );
+        }
+      });
       await this.userAuthService.deleteUser(userId, userRole);
       return { message: 'Usuario eliminado con éxito.' };
     } catch (error) {
@@ -116,13 +124,14 @@ export class UserAuthController {
   async getUsers(@Req() request: Request): Promise<User[]> {
     try {
       const user = await this.userAuthService.getUserById(request.user.userId);
-      if (user.role === 'superAdmin') {
-        return this.userAuthService.getUsers();
-      } else {
-        throw new UnauthorizedException(
-          'No tienes permiso para acceder a esta ruta.',
-        );
-      }
+      user.roles.forEach((role) => {
+        if (role === 'superAdmin') {
+          return this.userAuthService.getUsers();
+        }
+      });
+      throw new UnauthorizedException(
+        'No tienes permiso para acceder a esta ruta.',
+      );
     } catch (error) {
       throw new UnauthorizedException(
         'No tienes permiso para acceder a esta ruta.',
@@ -132,16 +141,20 @@ export class UserAuthController {
 
   @Get('user/:id')
   @UseGuards(AuthGuard)
-  async getUser(@Req() request: Request, @Param('id') id: string): Promise<User | UserTrabajador> {
+  async getUser(
+    @Req() request: Request,
+    @Param('id') id: string,
+  ): Promise<User> {
     try {
       const user = await this.userAuthService.getUserById(request.user.userId);
-      if (user.role === 'superAdmin') {
-        return this.userAuthService.getUserById(id);
-      } else {
-        throw new UnauthorizedException(
-          'No tienes permiso para acceder a esta ruta.',
-        );
-      }
+      user.roles.forEach((role) => {
+        if (role === 'superAdmin') {
+          return this.userAuthService.getUserById(id);
+        }
+      });
+      throw new UnauthorizedException(
+        'No tienes permiso para acceder a esta ruta.',
+      );
     } catch (error) {
       throw new UnauthorizedException(
         'No tienes permiso para acceder a esta ruta.',

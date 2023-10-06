@@ -73,7 +73,7 @@ export class UserAuthService {
       return {
         token,
         full_name: user.name + ' ' + user.last_name,
-        role: user.role,
+        roles: user.roles,
         email: user.email,
         profileImage: user.profileImage
       };
@@ -93,7 +93,7 @@ export class UserAuthService {
       throw new Error('An error occurred while retrieving users');
     }
   }
-  async getUserById(userId: string): Promise<User | UserTrabajador> {
+  async getUserById(userId: string): Promise<User> {
     try {
       return await this.userModel.findById(userId).exec();
     } catch (error) {
@@ -107,11 +107,13 @@ export class UserAuthService {
       const currentUser = await this.getUserById(
         req.user.userId,
       );
-      if (currentUser.role !== 'superAdmin') {
+     currentUser.roles.forEach((role) => {
+      if (role !== 'superAdmin') {
         throw new UnauthorizedException(
           'No tienes permiso para registrar nuevos usuarios.',
         );
       }
+     })
 
       const { password } = body;
 
@@ -164,7 +166,7 @@ export class UserAuthService {
 
   async updateUser(
     userId: string,
-    userData: User | UserTrabajador,
+    userData: User,
   ): Promise<void> {
     try {
       const existingUser = await this.userModel.findById(userId);
@@ -179,23 +181,10 @@ export class UserAuthService {
       await this.userModel.findByIdAndUpdate(userId, {
         name: updatedUserData.name,
         last_name: updatedUserData.last_name,
-        role: updatedUserData.role,
+        roles: updatedUserData.roles,
         password: hash,
       });
 
-
-      if (userData.role === 'trabajador') {
-        const existingTrabajador = await this.userTrabajadorModel.findById(userId);
-
-        if (!existingTrabajador) {
-          throw new NotFoundException('Trabajador no encontrado');
-        }
-        const hash = await bcrypt.hash(password, 10);
-        await this.userTrabajadorModel.findByIdAndUpdate(userId, {
-          ...updatedUserData,
-          password: hash,
-        });
-      }
     } catch (error) {
       throw new Error('An error occurred while updating the user');
     }
