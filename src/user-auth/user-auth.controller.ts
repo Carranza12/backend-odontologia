@@ -41,23 +41,7 @@ export class UserAuthController {
     @Req() request: Request,
   ): Promise<{ message: string }> {
     try {
-      const currentUser = await this.userAuthService.getUserById(
-        request.user.userId,
-      );
-      if (currentUser.role !== 'superAdmin') {
-        throw new UnauthorizedException(
-          'No tienes permiso para registrar nuevos usuarios.',
-        );
-      }
-      
-      const body = request.body;
-      
-      if (body.role === 'trabajador') {
-        return await this.userAuthService.registerTrabajador(body, profileImage);
-      }
-      if (body.role === 'superAdmin') {
-        return await this.userAuthService.registerUser(body, profileImage);
-      }
+      return await this.userAuthService.registerTrabajador(request, profileImage);
     } catch (error) {
       console.log("error:", error)
       throw new UnauthorizedException(

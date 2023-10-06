@@ -95,44 +95,67 @@ export class UserAuthService {
   }
   async getUserById(userId: string): Promise<User | UserTrabajador> {
     try {
-      const user = await this.userModel.findById(userId).exec();
-      if (user.role === "trabajador") {
-        const trabajador = await this.userTrabajadorModel.findById(userId).exec();
-        return trabajador;
-      }
-      return user;
+      return await this.userModel.findById(userId).exec();
     } catch (error) {
       throw new NotFoundException('Usuario no encontrado');
     }
   }
 
-  async registerTrabajador(body: any, profileImage: any) {
+  async registerTrabajador(req,profileImage) {
     try {
-      const { password, email, name, last_name, role } = body;
+      const { body } = req;
+      const currentUser = await this.getUserById(
+        req.user.userId,
+      );
+      if (currentUser.role !== 'superAdmin') {
+        throw new UnauthorizedException(
+          'No tienes permiso para registrar nuevos usuarios.',
+        );
+      }
+
+      const { password } = body;
+
       const hash = await bcrypt.hash(password, 10);
 
       if (profileImage) {
         body.profileImage = `http://localhost:3000/avatars/${profileImage.filename}`;
       }
 
-      console.log("body.profileImage:", body.profileImage)
-
       const userModelResult = await this.userModel.create({
-        email,
-        name,
-        last_name,
-        role,
-        password: hash,
-        profileImage: body.profileImage,
-      });
-      const userId = userModelResult._id;
-      await this.userTrabajadorModel.create({
         ...body,
-        profileImage: body.profileImage,
         password: hash,
-        _id: userId,
+        profileImage: body.profileImage,
       });
-      return { message: 'Trabajador registrado con exito!' };
+
+      const userId = userModelResult._id;
+      const srcPath = path.join(__dirname, '../..','src', 'assets', 'avatars');
+      
+      const sourceFilePath = path.join(srcPath, profileImage.filename);
+      const destFilePath = path.join(srcPath, `${userId}_avatar${path.extname(profileImage.filename)}`);
+      
+      fs.exists(sourceFilePath, (exists) => {
+        if (exists) {
+          fs.rename(sourceFilePath, destFilePath, (err) => {
+            if (err) {
+              console.error("Error al renombrar el archivo:", err);
+            } else {
+              console.log("Archivo renombrado con éxito.");
+            }
+          });
+        } else {
+          console.error("El archivo original no existe.");
+        }
+      });
+
+      body.profileImage = `http://localhost:3000/avatars/${userId}_avatar.jpg`;
+
+      await this.userModel.findByIdAndUpdate(userId, {
+        ...body,
+        password: hash,
+        profileImage: body.profileImage,
+      });
+     
+      return { message: 'Usuario registrado con exito!' };
     } catch (error) {
       console.log("error:", error)
       throw new Error('An error occurred while registering the user');
