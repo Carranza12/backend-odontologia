@@ -112,13 +112,11 @@ export class UserAuthService {
       const hash = await bcrypt.hash(password, 10);
 
       if (profileImage) {
-        const destinationPath = '../public/users/' + profileImage.originalname;
-        const writeStream = createWriteStream(destinationPath);
-        profileImage.stream.pipe(writeStream);
-        const absolutePath = path.resolve(destinationPath);
-        console.log("ABSOLUTE PATH:", absolutePath)
-        body.profileImage = absolutePath;
+        body.profileImage = `http://localhost:3000/avatars/${profileImage.filename}`;
       }
+
+      console.log("body.profileImage:", body.profileImage)
+
       const userModelResult = await this.userModel.create({
         email,
         name,

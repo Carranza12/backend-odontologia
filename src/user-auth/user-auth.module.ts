@@ -9,9 +9,6 @@ import { UserTrabajador, UserTrabajadorSchema } from './schemas/user-trabajador.
 import { MulterModule } from '@nestjs/platform-express';
 @Module({
   imports: [
-    MulterModule.register({
-      dest: '../public/users/',
-    }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([
       { name: UserTrabajador.name, schema: UserTrabajadorSchema },

@@ -20,6 +20,8 @@ import { AuthGuard } from './auth.guard';
 import { Request } from 'express';
 import { UserTrabajador } from './schemas/user-trabajador.schema';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { fileFilter, renameImage } from './helpers/avatars.helper';
 
 @Controller('api/auth')
 export class UserAuthController {
@@ -27,16 +29,21 @@ export class UserAuthController {
 
   @Post('register')
   @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('profileImage'))
+  @UseInterceptors(FileInterceptor('profileImage', {
+    storage: diskStorage({
+      destination: './src/assets/avatars',
+      filename: renameImage,
+    }),
+    fileFilter
+  }))
   async registerUser(
-    @UploadedFile() profileImage: any,
+    @UploadedFile() profileImage: Express.Multer.File,
     @Req() request: Request,
   ): Promise<{ message: string }> {
     try {
       const currentUser = await this.userAuthService.getUserById(
         request.user.userId,
       );
-      console.log("usuario actual:", currentUser)
       if (currentUser.role !== 'superAdmin') {
         throw new UnauthorizedException(
           'No tienes permiso para registrar nuevos usuarios.',
