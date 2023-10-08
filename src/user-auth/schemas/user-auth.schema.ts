@@ -20,6 +20,9 @@ export class User {
   roles: string[];
 
   @Prop( { required: true } )
+  role_default: string;
+
+  @Prop( { required: true } )
   profileImage: string;
 
   @Prop( { required: false } )

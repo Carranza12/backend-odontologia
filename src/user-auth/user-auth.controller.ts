@@ -43,10 +43,7 @@ export class UserAuthController {
     @Req() request: Request,
   ): Promise<{ message: string }> {
     try {
-      return await this.userAuthService.registerTrabajador(
-        request,
-        profileImage,
-      );
+      return await this.userAuthService.createNewUser(request, profileImage);
     } catch (error) {
       console.log('error:', error);
       throw new UnauthorizedException(
@@ -57,24 +54,33 @@ export class UserAuthController {
 
   @Put('users/:id')
   @UseGuards(AuthGuard)
+  @UseInterceptors(
+    FileInterceptor('profileImage', {
+      storage: diskStorage({
+        destination: './src/assets/avatars',
+        filename: renameImage,
+      }),
+      fileFilter,
+    })
+  )
   async updateUser(
     @Param('id') userId: string,
     @Body() body: User,
     @Req() request: Request,
+    @UploadedFile() profileImage: Express.Multer.File,
   ): Promise<{ message: string }> {
     try {
       const currentUser = await this.userAuthService.getUserById(
         request.user.userId,
       );
-      currentUser.roles.forEach((role) => {
-        if (role !== 'superAdmin') {
-          throw new UnauthorizedException(
-            'No tienes permiso para editar usuarios.',
-          );
-        }
-      });
 
-      await this.userAuthService.updateUser(userId, body);
+      if (currentUser.role_default !== 'superAdmin') {
+        throw new UnauthorizedException(
+          'No tienes permiso para editar usuarios.',
+        );
+      }
+
+      await this.userAuthService.updateUser(userId, body, profileImage);
       return { message: 'Usuario actualizado con éxito.' };
     } catch (error) {
       throw new UnauthorizedException(
@@ -87,21 +93,19 @@ export class UserAuthController {
   @UseGuards(AuthGuard)
   async deleteUser(
     @Param('id') userId: string,
-    @Req() request: Request,
-    @Query('userRole') userRole: string,
+    @Req() request: Request
   ): Promise<{ message: string }> {
     try {
       const currentUser = await this.userAuthService.getUserById(
         request.user.userId,
       );
-      currentUser.roles.forEach((role) => {
-        if (role !== 'superAdmin') {
+        if (currentUser.role_default !== 'superAdmin') {
           throw new UnauthorizedException(
             'No tienes permiso para eliminar usuarios.',
           );
         }
-      });
-      await this.userAuthService.deleteUser(userId, userRole);
+      
+      await this.userAuthService.deleteUser(userId);
       return { message: 'Usuario eliminado con éxito.' };
     } catch (error) {
       throw new UnauthorizedException(
@@ -124,11 +128,11 @@ export class UserAuthController {
   async getUsers(@Req() request: Request): Promise<User[]> {
     try {
       const user = await this.userAuthService.getUserById(request.user.userId);
-      user.roles.forEach((role) => {
-        if (role === 'superAdmin') {
-          return this.userAuthService.getUsers();
-        }
-      });
+
+      if (user.role_default === 'superAdmin') {
+        return this.userAuthService.getUsers();
+      }
+
       throw new UnauthorizedException(
         'No tienes permiso para acceder a esta ruta.',
       );
@@ -147,11 +151,11 @@ export class UserAuthController {
   ): Promise<User> {
     try {
       const user = await this.userAuthService.getUserById(request.user.userId);
-      user.roles.forEach((role) => {
-        if (role === 'superAdmin') {
-          return this.userAuthService.getUserById(id);
-        }
-      });
+
+      if (user.role_default === 'superAdmin') {
+        return this.userAuthService.getUserById(id);
+      }
+
       throw new UnauthorizedException(
         'No tienes permiso para acceder a esta ruta.',
       );

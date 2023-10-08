@@ -26,35 +26,6 @@ export class UserAuthService {
     private jwtService: JwtService,
   ) { }
 
-  async registerUser(userData: User, profileImage: any): Promise<{ message: string }> {
-    try {
-      const { password } = userData;
-      const hash = await bcrypt.hash(password, 10);
-
-      const uploadsFolderPath = path.join(__dirname, '..', 'uploads');
-      console.log("uploadsFolderPath:", uploadsFolderPath)
-      if (!fs.existsSync(uploadsFolderPath)) {
-        console.log('Creando la carpeta "uploads"...');
-        fs.mkdirSync(uploadsFolderPath);
-      }
-
-      if (profileImage) {
-        const imageFileName = profileImage.originalname;
-        const imagePath = path.join(uploadsFolderPath, imageFileName);
-        fs.writeFileSync(imagePath, profileImage.buffer);
-        userData.profileImage = `uploads/${imageFileName}`;
-      }
-
-      const user = new this.userModel({ ...userData, password: hash });
-
-
-
-      await user.save();
-      return { message: 'Usuario registrado con éxito!' };
-    } catch (error) {
-      throw new BadRequestException('Error al registrar al usuario');
-    }
-  }
 
   async loginUser(email: string, password: string): Promise<any> {
     try {
@@ -74,6 +45,7 @@ export class UserAuthService {
         token,
         full_name: user.name + ' ' + user.last_name,
         roles: user.roles,
+        role_default: user.role_default,
         email: user.email,
         profileImage: user.profileImage
       };
@@ -101,19 +73,18 @@ export class UserAuthService {
     }
   }
 
-  async registerTrabajador(req,profileImage) {
+  async createNewUser(req,profileImage) {
     try {
       const { body } = req;
       const currentUser = await this.getUserById(
         req.user.userId,
       );
-     currentUser.roles.forEach((role) => {
-      if (role !== 'superAdmin') {
+
+      if (currentUser.role_default !== 'superAdmin') {
         throw new UnauthorizedException(
           'No tienes permiso para registrar nuevos usuarios.',
         );
       }
-     })
 
       const { password } = body;
 
@@ -167,7 +138,8 @@ export class UserAuthService {
   async updateUser(
     userId: string,
     userData: User,
-  ): Promise<void> {
+    profileImage
+  ): Promise<any> {
     try {
       const existingUser = await this.userModel.findById(userId);
 
@@ -178,30 +150,50 @@ export class UserAuthService {
       const { password, ...updatedUserData } = userData;
       const hash = await bcrypt.hash(password, 10);
 
+      if (profileImage) {
+        userData.profileImage = `http://localhost:3000/avatars/${profileImage.filename}`;
+        const srcPath = path.join(__dirname, '../..','src', 'assets', 'avatars');
+        const sourceFilePath = path.join(srcPath, profileImage.filename);
+        const destFilePath = path.join(srcPath, `${userId}_avatar${path.extname(profileImage.filename)}`);
+        
+        fs.exists(sourceFilePath, (exists) => {
+          if (exists) {
+            fs.rename(sourceFilePath, destFilePath, (err) => {
+              if (err) {
+                console.error("Error al renombrar el archivo:", err);
+              } else {
+                console.log("Archivo renombrado con éxito.");
+              }
+            });
+          } else {
+            console.error("El archivo original no existe.");
+          }
+        });
+  
+        userData.profileImage = `http://localhost:3000/avatars/${userId}_avatar.jpg`;
+  
+      }
+
       await this.userModel.findByIdAndUpdate(userId, {
-        name: updatedUserData.name,
-        last_name: updatedUserData.last_name,
-        roles: updatedUserData.roles,
+       ...userData,
         password: hash,
+        profileImage: userData.profileImage,
       });
 
+      return { message: 'Usuario actualizado con exito!' };
     } catch (error) {
       throw new Error('An error occurred while updating the user');
     }
   }
 
-  async deleteUser(userId: string, role: string): Promise<void> {
+  async deleteUser(userId: string): Promise<void> {
     try {
       const existingUser = await this.userModel.findById(userId);
 
       if (!existingUser) {
         throw new NotFoundException('Usuario no encontrado');
       }
-
       await this.userModel.findByIdAndRemove(userId);
-      if (role === 'trabajador') {
-        await this.userTrabajadorModel.findByIdAndRemove(userId);
-      }
     } catch (error) {
       throw new Error('An error occurred while deleting the user');
     }
