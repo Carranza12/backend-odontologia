@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { UserAuthModule } from './user-auth/user-auth.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { PatientModule } from './patient/patient.module';
 
 
 @Module({
@@ -20,6 +21,7 @@ import { join } from 'path';
     }),
     MongooseModule.forRoot("mongodb://127.0.0.1:27017/odontologia"),
     UserAuthModule,
+    PatientModule,
   ],
   controllers: [AppController],
   providers: [AppService],
