@@ -7,6 +7,7 @@ import { UserSchema } from './schemas/user-auth.schema';
 import { secretKey } from './config'; 
 import { UserTrabajador, UserTrabajadorSchema } from './schemas/user-trabajador.schema';
 import { MulterModule } from '@nestjs/platform-express';
+import { AuthGuard } from './auth.guard';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
@@ -20,6 +21,7 @@ import { MulterModule } from '@nestjs/platform-express';
   ],
   controllers: [UserAuthController],
   providers: [UserAuthService],
+  exports: [UserAuthService]
 })
 export class UserAuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -1,14 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards } from '@nestjs/common';
 import { PatientService } from './patient.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
+import { Request } from 'express';
+import { AuthGuard } from 'src/user-auth/auth.guard';
 
-@Controller('patient')
+@Controller('api/patients')
 export class PatientController {
   constructor(private readonly patientService: PatientService) {}
 
+
   @Post()
-  create(@Req() request: any) {
+  create(@Req() request: Request) {
     return this.patientService.create(request);
   }
 
