@@ -79,8 +79,16 @@ export class perfilMaestroService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} patient`;
+  async findOne(id: string) {
+    try {
+      const patient = await this.perfilMaestroModel.findOne({ id_user: id });
+      if (!patient) {
+        throw new Error('Perfil de maestro no encontrado');
+      }
+      return patient;
+    } catch (error) {
+      throw new Error('Ocurrió un error al buscar el perfil de maestro por id_user');
+    }
   }
 
   update(id: number, updatePatientDto: any) {

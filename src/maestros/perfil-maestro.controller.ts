@@ -19,7 +19,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { fileFilter, renameImage } from 'src/user-auth/helpers/avatars.helper';
 
-@Controller('api/maestros')
+@Controller('api/perfil/maestros/')
 export class perfilMaestroController {
   constructor(private readonly perfil_maestro: perfilMaestroService) {}
 
@@ -37,6 +37,7 @@ export class perfilMaestroController {
     @UploadedFile() firma: Express.Multer.File,
     @Req() request: Request,
   ) {
+    console.log("firma recibida:", firma)
     return this.perfil_maestro.createOrUpdatePerfilMaestro(request, firma);
   }
 
@@ -47,7 +48,7 @@ export class perfilMaestroController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.perfil_maestro.findOne(+id);
+    return this.perfil_maestro.findOne(id);
   }
 
   @Patch(':id')
