@@ -45,18 +45,18 @@ export class PatientService {
       );
     }
     try {
-      const fechaString = body.fecha_de_nacimiento;
+    /*   const fechaString = body.fecha_de_nacimiento;
       const partesFecha = fechaString.split('-');
       const dia = parseInt(partesFecha[0], 10);
       const mes = parseInt(partesFecha[1], 10) - 1;
       const ano = parseInt(partesFecha[2], 10);
 
       const fecha_de_nacimiento = new Date(ano, mes, dia);
-      const timestamp_fecha_de_nacimiento = fecha_de_nacimiento.getTime();
+      const timestamp_fecha_de_nacimiento = fecha_de_nacimiento.getTime(); */
 
       const newPatient = await this.patientModel.create({
         ...body,
-        fecha_de_nacimiento: timestamp_fecha_de_nacimiento,
+      //  fecha_de_nacimiento: timestamp_fecha_de_nacimiento,
       });
 
       const historia_clinica_id = await this.createHistoriaClinica(
