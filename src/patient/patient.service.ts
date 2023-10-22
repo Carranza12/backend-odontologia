@@ -54,7 +54,7 @@ export class PatientService {
       const fecha_de_nacimiento = new Date(ano, mes, dia);
       const timestamp_fecha_de_nacimiento = fecha_de_nacimiento.getTime(); */
 
-      const newPatient = await this.patientModel.create({
+      const newPatient: any  = await this.patientModel.create({
         ...body,
       //  fecha_de_nacimiento: timestamp_fecha_de_nacimiento,
       });
@@ -63,14 +63,15 @@ export class PatientService {
         newPatient._id,
       );
 
-      await this.patientModel.updateOne(
+       await this.patientModel.updateOne(
         { _id: newPatient._id },
         { $set: { historia_clinica_id: historia_clinica_id } }
       );
 
+
       return {
         message: 'Paciente creado exitosamente',
-        item: newPatient,
+        item: { nombre_completo: body.nombre_completo, historia_clinica_id },
         error: null,
       };
     } catch (error) {
@@ -104,6 +105,37 @@ export class PatientService {
   findOne(id: number) {
     return `This action returns a #${id} patient`;
   }
+
+  async findHistoriaClinica(historia_clinica_id:string) {
+    const historia_clinica: any = await this.historiaClinicaModel.findOne({ _id: historia_clinica_id });
+    if (!historia_clinica) {
+      return {
+        message: 'Historia clínica no encontrada',
+        item: null,
+        error: [],
+      };
+    }
+  
+    const paciente: any = await this.patientModel.findOne({ _id: historia_clinica.id_paciente });
+  
+    if (!paciente) {
+      return {
+        message: 'Paciente no encontrado',
+        item: null,
+        error: [],
+      };
+    }
+  
+    return {
+      message: 'Información consultada con éxito',
+      item: {
+        historia_clinica: historia_clinica._doc, 
+        paciente: paciente._doc,
+      },
+      error: [],
+    };
+  }
+  
 
   update(id: number, updatePatientDto: UpdatePatientDto) {
     return `This action updates a #${id} patient`;

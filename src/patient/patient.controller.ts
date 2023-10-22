@@ -25,6 +25,11 @@ export class PatientController {
     return this.patientService.findOne(+id);
   }
 
+  @Get('/historia_clinica/:id')
+  findHistoriaClinica(@Param('id') historia_clinica_id: string) {
+    return this.patientService.findHistoriaClinica(historia_clinica_id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto) {
     return this.patientService.update(+id, updatePatientDto);
