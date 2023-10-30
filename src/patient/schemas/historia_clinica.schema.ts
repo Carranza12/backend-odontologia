@@ -299,7 +299,31 @@ export class HistoriaClinica {
   aparatos_sistemas_terapeutica_empleada: string;
 
   @Prop({ required: false })
+  exploracion_fisica_raza_sexo_edad_facies_estado_conciencia: string;
+
+  @Prop({ required: false })
+  exploracion_fisica_actitud_constitucion_marcha_movimientos_anormales: string;
+
+  @Prop({ required: false })
+  exploracion_fisica_signos_vitales: string;
+
+  @Prop({ required: false })
+  exploracion_fisica_TA: string;
+
+  @Prop({ required: false })
+  exploracion_fisica_frec_respiratoria: string;
+
+  @Prop({ required: false })
+  exploracion_fisica_temperatura: string;
+
+  @Prop({ required: false })
+  exploracion_fisica_peso: string;
+
+  @Prop({ required: false })
   consultas: ConsultaHistoriaClinicaI[];
+
+  @Prop({ required: false })
+  odontogramas: any[];
   
 }
 
