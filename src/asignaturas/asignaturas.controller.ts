@@ -28,9 +28,9 @@ import {
     }
 
     
-    @Get('/semestre/:semestre')
-    async getAsignaturasBySemestre(@Param('semestre') semestre: string) {
-      const asignatura = await this._asignaturas.getAsignaturasBySemestre(semestre);
+    @Get('/semestre/:semestre/:carrera')
+    async getAsignaturasBySemestre(@Param('semestre') semestre: string,@Param('carrera') carrera: string) {
+      const asignatura = await this._asignaturas.getAsignaturasBySemestre(semestre,carrera);
       return asignatura;
     }
   

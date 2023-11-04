@@ -67,6 +67,8 @@ export class perfilEstudianteService {
     }
   }
 
+ 
+
   update(id: number, updatePatientDto: any) {
     return `This action updates a #${id} patient`;
   }

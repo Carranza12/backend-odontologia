@@ -10,9 +10,21 @@ export class perfilEstudiante {
   semestre_actual: string;
 
   @Prop({ required: true })
-  materias: string[];
+  Matricula: string;
+
+  
+  @Prop({ required: true })
+  carrera: string;
+
+  @Prop({ required: true })
+  materias: materia[];
 }
 
+
+interface materia{
+  materia_id: string;
+  practicas_realizadas:number;
+}
 export type perfilEstudianteDocument = perfilEstudiante & Document;
 export const perfilEstudianteSchema =
   SchemaFactory.createForClass(perfilEstudiante);

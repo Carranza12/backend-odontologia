@@ -24,8 +24,8 @@ export class AsignaturaService {
     return asignatura;
   }
 
-  async getAsignaturasBySemestre(semestre: string): Promise<any> {
-    const asignaturas = await this.asignaturaModel.find({ semestre }).exec();
+  async getAsignaturasBySemestre(semestre: string,carrera:string): Promise<any> {
+    const asignaturas = await this.asignaturaModel.find({ semestre, carrera }).exec();
     if (!asignaturas) {
       throw new NotFoundException('Asignaturas no encontradas');
     }

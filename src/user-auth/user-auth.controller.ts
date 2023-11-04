@@ -152,7 +152,7 @@ export class UserAuthController {
     try {
       const user = await this.userAuthService.getUserById(request.user.userId);
 
-      if (user.role_default === 'superAdmin') {
+      if (user.role_default === 'superAdmin' || user.role_default === 'estudiante') {
         return this.userAuthService.getUserById(id);
       }
 
@@ -165,4 +165,22 @@ export class UserAuthController {
       );
     }
   }
+
+
+  @Get('user/email/:email')
+  @UseGuards(AuthGuard)
+  async getUserByEmail(
+    @Req() request: Request,
+    @Param('email') email: string,
+  ): Promise<any> {
+    try {
+      await this.userAuthService.getUserByEmail(email);
+    } catch (error) {
+      throw new UnauthorizedException(
+        'No tienes permiso para acceder a esta ruta.',
+      );
+    }
+  }
+
+
 }

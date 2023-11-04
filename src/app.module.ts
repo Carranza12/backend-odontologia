@@ -9,6 +9,7 @@ import { join } from 'path';
 import { PatientModule } from './patient/patient.module';
 import { maestrosModule } from './maestros/maestros.module';
 import { asignaturasModule } from './asignaturas/asignaturas.module';
+import { estudiantesModule } from './estudiantes/estudiantes.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { asignaturasModule } from './asignaturas/asignaturas.module';
     UserAuthModule,
     PatientModule,
     maestrosModule,
-    asignaturasModule
+    asignaturasModule,
+    estudiantesModule
   ],
   controllers: [AppController],
   providers: [AppService],

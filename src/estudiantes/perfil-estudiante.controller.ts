@@ -40,6 +40,8 @@ import { perfilEstudianteService } from './perfil-estudiante.service';
     findOne(@Param('id') id: string) {
       return this.perfil_estudiante.findOne(id);
     }
+
+    
   
     @Patch(':id')
     update(@Param('id') id: string, @Body() updatePatientDto: any) {

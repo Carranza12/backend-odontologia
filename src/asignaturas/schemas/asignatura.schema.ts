@@ -14,6 +14,10 @@ export class asignatura {
 
   @Prop({ required: true })
   semestre: string;
+
+  
+  @Prop({ required: false })
+  meta_practicas: number;
 }
 
 export type asignaturaDocument = asignatura & Document;

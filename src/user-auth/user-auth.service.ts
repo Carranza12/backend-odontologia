@@ -47,7 +47,8 @@ export class UserAuthService {
         roles: user.roles,
         role_default: user.role_default,
         email: user.email,
-        profileImage: user.profileImage
+        profileImage: user.profileImage,
+        user_id: user._id
       };
     } catch (error) {
       console.log(error);
@@ -72,6 +73,16 @@ export class UserAuthService {
       throw new NotFoundException('Usuario no encontrado');
     }
   }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    try {
+      const respuesta = await this.userModel.findOne({ email }).exec();
+      return respuesta
+    } catch (error) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+  }
+  
 
   async createNewUser(req,profileImage) {
     try {
