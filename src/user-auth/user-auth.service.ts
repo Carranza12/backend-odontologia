@@ -146,9 +146,12 @@ export class UserAuthService {
       if (!existingUser) {
         throw new NotFoundException('Usuario no encontrado');
       }
-
+      let hash = "";
       const { password, ...updatedUserData } = userData;
-      const hash = await bcrypt.hash(password, 10);
+      if(password){
+        hash = await bcrypt.hash(password, 10);
+      }
+     
 
       if (profileImage) {
         userData.profileImage = `http://localhost:3000/avatars/${profileImage.filename}`;
@@ -173,12 +176,15 @@ export class UserAuthService {
         userData.profileImage = `http://localhost:3000/avatars/${userId}_avatar.jpg`;
   
       }
-
-      await this.userModel.findByIdAndUpdate(userId, {
-       ...userData,
-        password: hash,
+      let item_to_udate = {
+        ...userData,
         profileImage: userData.profileImage,
-      });
+      }
+
+      if(hash){
+        item_to_udate.password = hash;
+      }
+      await this.userModel.findByIdAndUpdate(userId, item_to_udate);
 
       return { message: 'Usuario actualizado con exito!' };
     } catch (error) {
