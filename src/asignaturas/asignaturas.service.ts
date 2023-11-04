@@ -24,6 +24,14 @@ export class AsignaturaService {
     return asignatura;
   }
 
+  async getAsignaturasBySemestre(semestre: string): Promise<any> {
+    const asignaturas = await this.asignaturaModel.find({ semestre }).exec();
+    if (!asignaturas) {
+      throw new NotFoundException('Asignaturas no encontradas');
+    }
+    return asignaturas;
+  }
+
   // Método para crear una nueva asignatura
   async createAsignatura(asignaturaData: any): Promise<asignaturaDocument> {
     const nuevaAsignatura = new this.asignaturaModel(asignaturaData);

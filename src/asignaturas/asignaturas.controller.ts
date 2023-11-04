@@ -7,6 +7,7 @@ import {
     Body,
     Param,
     UseGuards,
+    Put,
   } from '@nestjs/common';
   import { AsignaturaService } from './asignaturas.service';
   
@@ -25,6 +26,13 @@ import {
       const asignatura = await this._asignaturas.getAsignaturaById(id);
       return asignatura;
     }
+
+    
+    @Get('/semestre/:semestre')
+    async getAsignaturasBySemestre(@Param('semestre') semestre: string) {
+      const asignatura = await this._asignaturas.getAsignaturasBySemestre(semestre);
+      return asignatura;
+    }
   
     @Post()
     async createAsignatura(@Body() asignaturaData: any) {
@@ -33,7 +41,7 @@ import {
     }
   
     // Ruta para actualizar una asignatura por su ID
-    @Patch(':id')
+    @Put(':id')
     async updateAsignatura(@Param('id') id: string, @Body() asignaturaData: any) {
       const asignaturaActualizada = await this._asignaturas.updateAsignatura(id, asignaturaData);
       return asignaturaActualizada;
