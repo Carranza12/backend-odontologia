@@ -34,8 +34,6 @@ export class HistoriaClinica {
   @Prop({ required: false })
   habitos: boolean;
 
-  @Prop({ required: false })
-  ant_personales_otros: boolean;
 
   @Prop({ required: false })
   ant_personales_otros_textarea: string;
@@ -84,9 +82,6 @@ export class HistoriaClinica {
 
   @Prop({ required: false })
   SIDA: boolean;
-
-  @Prop({ required: false })
-  ant_personales_p_otros: boolean;
 
   @Prop({ required: false })
   ant_personales_p_otros_textarea: String;
@@ -324,6 +319,10 @@ export class HistoriaClinica {
 
   @Prop({ required: false })
   odontogramas: any[];
+
+  @Prop({ required: false })
+  antecedentes_hereditarios: string;
+  
   
 }
 

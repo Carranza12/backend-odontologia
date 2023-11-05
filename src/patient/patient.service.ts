@@ -93,6 +93,40 @@ export class PatientService {
     return res._id;
   }
 
+  async updateHistoriaClinica(id_historia_clinica, nuevosDatos) {
+    try {
+      console.log("nuevosDatos:", nuevosDatos)
+      console.log("id_historia_clinica:", id_historia_clinica)
+      // Comprueba si la historia clínica existe
+      const historiaClinicaExistente = await this.historiaClinicaModel.findById(id_historia_clinica);
+      
+      if (!historiaClinicaExistente) {
+        throw new Error('Historia clínica no encontrada');
+      }
+      let pacienteBody = nuevosDatos.paciente;
+      
+      // Actualiza los datos de la historia clínica
+      historiaClinicaExistente.set(nuevosDatos);
+      const historiaClinicaActualizada = await historiaClinicaExistente.save();
+
+      const pacienteExistente = await this.patientModel.findById(historiaClinicaActualizada.id_paciente);
+      if (!pacienteExistente) {
+        throw new Error('paciente no encontrado');
+      }
+      pacienteExistente.set(pacienteBody);
+      const pacienteExistenteActualizado = await pacienteExistente.save();
+
+  
+      return {
+        historia_clinica: historiaClinicaActualizada,
+        paciente: pacienteExistenteActualizado
+      }
+    } catch (error) {
+      throw new Error(`Error al actualizar la historia clínica: ${error.message}`);
+    }
+  }
+
+  
   async findAll() {
     try {
       const patients = await this.patientModel.find({});

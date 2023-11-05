@@ -7,7 +7,7 @@ export class Patient {
   nombre_completo: string;
 
   @Prop({ required: false })
-  fecha_de_nacimiento: number;
+  fecha_de_nacimiento: string;
 
   @Prop({ required: false })
   genero: string;
