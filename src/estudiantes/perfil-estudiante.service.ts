@@ -69,8 +69,29 @@ export class perfilEstudianteService {
 
  
 
-  update(id: number, updatePatientDto: any) {
-    return `This action updates a #${id} patient`;
+  async update(id: number, nuevosDatos: any) {
+    try {
+      console.log("nuevosDatos:", nuevosDatos)
+      console.log("id:", id)
+      // Comprueba si la historia clínica existe
+      const existente = await this.perfilEstudianteModel.findById(id);
+      
+      if (!existente) {
+        throw new Error('perfil  no encontrado');
+      }
+   
+      
+
+      existente.set({...nuevosDatos, ...existente});
+      const historiaClinicaActualizada = await existente.save();
+
+    
+
+  
+      return existente
+    } catch (error) {
+      throw new Error(`Error al actualizar el perfil: ${error.message}`);
+    }
   }
 
   remove(id: number) {

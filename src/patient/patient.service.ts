@@ -170,6 +170,36 @@ export class PatientService {
     };
   }
   
+  async findHistoriasClinicasPorEstudiante(id_estudiante: string) {
+    try {
+      const historias_clinicas = await this.historiaClinicaModel.find({
+        'consultas': {
+          $elemMatch: {
+            'estudiante.id_estudiante': id_estudiante
+          }
+        }
+      });
+  
+      if (historias_clinicas.length === 0) {
+        return {
+          message: 'No se encontraron historias clínicas para este estudiante',
+          items: [],
+        };
+      }
+  
+      return {
+        message: 'Historias clínicas encontradas',
+        items: historias_clinicas,
+      };
+    } catch (error) {
+      return {
+        message: 'Error al buscar historias clínicas',
+        items: [],
+        error: error.message,
+      };
+    }
+  }
+  
 
   update(id: number, updatePatientDto: UpdatePatientDto) {
     return `This action updates a #${id} patient`;

@@ -11,6 +11,7 @@ import {
     UseGuards,
     UseInterceptors,
     UploadedFile,
+    Put,
   } from '@nestjs/common';
   import { Request } from 'express';
   import { AuthGuard } from 'src/user-auth/auth.guard';
@@ -43,9 +44,9 @@ import { perfilEstudianteService } from './perfil-estudiante.service';
 
     
   
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updatePatientDto: any) {
-      return this.perfil_estudiante.update(+id, updatePatientDto);
+    @Put(':id')
+    update(@Param('id') id: any, @Body() updatePatientDto: any) {
+      return this.perfil_estudiante.update(id, updatePatientDto);
     }
   
     @Delete(':id')
