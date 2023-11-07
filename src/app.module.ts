@@ -25,7 +25,7 @@ import { estudiantesModule } from './estudiantes/estudiantes.module';
       rootPath: join(__dirname, '..', 'src', 'assets', 'firmas'), // Ruta a la carpeta de firmas
       serveRoot: '/firmas', // Ruta de la URL para acceder a los archivos de firmas
     }),
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017/odontologia'),
+    MongooseModule.forRoot('mongodb+srv://admin:admin@odontologia.sa7arhd.mongodb.net/?retryWrites=true&w=majority'),
     UserAuthModule,
     PatientModule,
     maestrosModule,

@@ -87,7 +87,7 @@ export class UserAuthService {
   async createNewUser(req,profileImage) {
     try {
       const { body } = req;
-      const currentUser = await this.getUserById(
+       const currentUser = await this.getUserById(
         req.user.userId,
       );
 
@@ -95,8 +95,8 @@ export class UserAuthService {
         throw new UnauthorizedException(
           'No tienes permiso para registrar nuevos usuarios.',
         );
-      }
-
+      } 
+      console.log("body:", body)
       const { password } = body;
 
       const hash = await bcrypt.hash(password, 10);
