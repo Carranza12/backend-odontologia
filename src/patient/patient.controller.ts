@@ -20,6 +20,7 @@ export class PatientController {
     return this.patientService.findAll();
   }
 
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.patientService.findOne(+id);
@@ -28,6 +29,11 @@ export class PatientController {
   @Get('/historia_clinica/:id')
   findHistoriaClinica(@Param('id') historia_clinica_id: string) {
     return this.patientService.findHistoriaClinica(historia_clinica_id);
+  }
+
+  @Get('/historia_clinica/materia/:materia_id')
+  findHistoriaByMateria(@Param('materia_id') materia_id: string) {
+    return this.patientService.getHistoriasByMateria(materia_id);
   }
 
   @Get('/historia_clinica/estudiante/:id_estudiante')

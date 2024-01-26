@@ -33,6 +33,12 @@ import {
       const asignatura = await this._asignaturas.getAsignaturasBySemestre(semestre,carrera);
       return asignatura;
     }
+
+    @Get('/maestro/:maestro_id')
+    async getAsignaturasByMaestro(@Param('maestro_id') maestro_id: string) {
+      const asignatura = await this._asignaturas.getAsignaturasByMaestro(maestro_id);
+      return asignatura;
+    }
   
     @Post()
     async createAsignatura(@Body() asignaturaData: any) {

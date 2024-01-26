@@ -32,6 +32,15 @@ export class AsignaturaService {
     return asignaturas;
   }
 
+  async getAsignaturasByMaestro(maestro_id: string): Promise<any> {
+    console.log("SERVICIO....")
+    const asignaturas = await this.asignaturaModel.find({ maestro_id }).exec();
+    if (!asignaturas) {
+      throw new NotFoundException('Asignaturas no encontradas');
+    }
+    return asignaturas;
+  }
+
   // Método para crear una nueva asignatura
   async createAsignatura(asignaturaData: any): Promise<asignaturaDocument> {
     const nuevaAsignatura = new this.asignaturaModel(asignaturaData);

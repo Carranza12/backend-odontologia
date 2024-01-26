@@ -136,6 +136,21 @@ export class PatientService {
     }
   }
 
+  async getHistoriasByMateria(materia_id:string) {
+    try {
+      const historias = await this.historiaClinicaModel.find({
+        "consultas": {
+          "$elemMatch": {
+            "practica_para_la_materia.value": `${materia_id}`
+          }
+        }
+      });
+      return historias;
+    } catch (error) {
+      throw new Error('An error occurred while retrieving histories');
+    }
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} patient`;
   }
