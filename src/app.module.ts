@@ -18,14 +18,14 @@ import { estudiantesModule } from './estudiantes/estudiantes.module';
       isGlobal: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../..', 'src', 'assets', 'avatars'), // Ruta a la carpeta de avatares
-      serveRoot: '/avatars', // Ruta de la URL para acceder a los archivos
+      rootPath: join(__dirname, '../..', 'src', 'assets', 'avatars'), 
+      serveRoot: '/avatars', 
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'src', 'assets', 'firmas'), // Ruta a la carpeta de firmas
-      serveRoot: '/firmas', // Ruta de la URL para acceder a los archivos de firmas
+      rootPath: join(__dirname, '..', 'src', 'assets', 'firmas'), 
+      serveRoot: '/firmas', 
     }),
-    MongooseModule.forRoot('mongodb+srv://admin:admin@odontologia.sa7arhd.mongodb.net/?retryWrites=true&w=majority'),
+    MongooseModule.forRoot('mongodb://localhost:27017/odontologia'),
     UserAuthModule,
     PatientModule,
     maestrosModule,
