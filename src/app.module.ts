@@ -10,6 +10,7 @@ import { PatientModule } from './patient/patient.module';
 import { maestrosModule } from './maestros/maestros.module';
 import { asignaturasModule } from './asignaturas/asignaturas.module';
 import { estudiantesModule } from './estudiantes/estudiantes.module';
+import { env } from 'process';
 
 @Module({
   imports: [
@@ -25,7 +26,11 @@ import { estudiantesModule } from './estudiantes/estudiantes.module';
       rootPath: join(__dirname, '..', 'src', 'assets', 'firmas'), 
       serveRoot: '/firmas', 
     }),
-    MongooseModule.forRoot('mongodb://localhost:27017/odontologia'),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'src', 'assets', 'historias_clinicas'), 
+      serveRoot: '/historias_clinicas', 
+    }),
+    MongooseModule.forRoot('mongodb://localhost/odontologia'),
     UserAuthModule,
     PatientModule,
     maestrosModule,

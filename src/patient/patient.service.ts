@@ -7,10 +7,13 @@ import { Model } from 'mongoose';
 import { UserAuthService } from 'src/user-auth/user-auth.service';
 import { PatientDocument } from './schemas/patient.schema';
 import * as jwt from 'jsonwebtoken';
+import * as fs from 'fs-extra';
+
 import {
   HistoriaClinica,
   HistoriaClinicaDocument,
 } from './schemas/historia_clinica.schema';
+import * as path from 'path';
 
 @Injectable()
 export class PatientService {
@@ -95,11 +98,124 @@ export class PatientService {
 
   async updateHistoriaClinica(id_historia_clinica, nuevosDatos) {
     try {
-      console.log("nuevosDatos:", nuevosDatos)
-      console.log("id_historia_clinica:", id_historia_clinica)
+ 
       // Comprueba si la historia clínica existe
       const historiaClinicaExistente = await this.historiaClinicaModel.findById(id_historia_clinica);
-      
+      let index = 1;
+      for await(const consulta of nuevosDatos.consultas){
+        if(consulta.evidencia1 ){
+          const matches = consulta.evidencia1.match(/^data:(.*);base64,(.*)$/);
+          if (matches && matches.length === 3) {
+            const mimeType = matches[1];
+            const base64Data = matches[2];
+            const extension = mimeType.split('/')[1];
+            const uploadsDir = path.join(__dirname, '../..', 'src', 'assets', 'historias_clinicas', `${id_historia_clinica}`, `consulta_${index}` );
+            try {
+              await fs.ensureDir(uploadsDir);
+        
+              const filename = `Consulta_${index}_evidencia1.${extension}`;
+              const filePath = path.join(uploadsDir, filename);
+              await fs.writeFile(filePath, base64Data, 'base64');
+              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`
+              nuevosDatos.consultas[index - 1].evidencia1 = imgPath;
+              console.log('Archivo guardado con éxito:', imgPath);
+            } catch (error) {
+              console.error('Error al guardar el archivo:', error);
+            }
+          }
+         
+        }
+        if(consulta.evidencia2){
+          const matches = consulta.evidencia2.match(/^data:(.*);base64,(.*)$/);
+          if (matches && matches.length === 3) {
+            const mimeType = matches[1];
+            const base64Data = matches[2];
+            const extension = mimeType.split('/')[1];
+            const uploadsDir = path.join(__dirname, '../..', 'src', 'assets', 'historias_clinicas', `${id_historia_clinica}`, `consulta_${index}` );
+            try {
+              await fs.ensureDir(uploadsDir);
+        
+              const filename = `Consulta_${index}_evidencia2.${extension}`;
+              const filePath = path.join(uploadsDir, filename);
+              await fs.writeFile(filePath, base64Data, 'base64');
+              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`
+              nuevosDatos.consultas[index - 1].evidencia2 = imgPath;
+              console.log('Archivo guardado con éxito:', imgPath);
+            } catch (error) {
+              console.error('Error al guardar el archivo:', error);
+            }
+          }
+         
+        }
+        if(consulta.evidencia3){
+          const matches = consulta.evidencia3.match(/^data:(.*);base64,(.*)$/);
+          if (matches && matches.length === 3) {
+            const mimeType = matches[1];
+            const base64Data = matches[2];
+            const extension = mimeType.split('/')[1];
+            const uploadsDir = path.join(__dirname, '../..', 'src', 'assets', 'historias_clinicas', `${id_historia_clinica}`, `consulta_${index}` );
+            try {
+              await fs.ensureDir(uploadsDir);
+        
+              const filename = `Consulta_${index}_evidencia3.${extension}`;
+              const filePath = path.join(uploadsDir, filename);
+              await fs.writeFile(filePath, base64Data, 'base64');
+              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`
+              nuevosDatos.consultas[index - 1].evidencia3 = imgPath;
+              console.log('Archivo guardado con éxito:', imgPath);
+            } catch (error) {
+              console.error('Error al guardar el archivo:', error);
+            }
+          }
+         
+        }
+        if(consulta.evidencia4){
+          const matches = consulta.evidencia4.match(/^data:(.*);base64,(.*)$/);
+          if (matches && matches.length === 3) {
+            const mimeType = matches[1];
+            const base64Data = matches[2];
+            const extension = mimeType.split('/')[1];
+            const uploadsDir = path.join(__dirname, '../..', 'src', 'assets', 'historias_clinicas', `${id_historia_clinica}`, `consulta_${index}` );
+            try {
+              await fs.ensureDir(uploadsDir);
+        
+              const filename = `Consulta_${index}_evidencia4.${extension}`;
+              const filePath = path.join(uploadsDir, filename);
+              await fs.writeFile(filePath, base64Data, 'base64');
+              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`
+              nuevosDatos.consultas[index - 1].evidencia4 = imgPath;
+              console.log('Archivo guardado con éxito:', imgPath);
+            } catch (error) {
+              console.error('Error al guardar el archivo:', error);
+            }
+          }
+          
+        }
+        if(consulta.evidencia5){
+          const matches = consulta.evidencia5.match(/^data:(.*);base64,(.*)$/);
+          if (matches && matches.length === 3) {
+            const mimeType = matches[1];
+            const base64Data = matches[2];
+            const extension = mimeType.split('/')[1];
+            const uploadsDir = path.join(__dirname, '../..', 'src', 'assets', 'historias_clinicas', `${id_historia_clinica}`, `consulta_${index}` );
+            try {
+              await fs.ensureDir(uploadsDir);
+        
+              const filename = `Consulta_${index}_evidencia5.${extension}`;
+              const filePath = path.join(uploadsDir, filename);
+              await fs.writeFile(filePath, base64Data, 'base64');
+              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`
+              nuevosDatos.consultas[index - 1].evidencia5 = imgPath;
+              console.log('Archivo guardado con éxito:', imgPath);
+            } catch (error) {
+              console.error('Error al guardar el archivo:', error);
+            }
+          }
+         
+        }
+        index++;
+      }
+
       if (!historiaClinicaExistente) {
         throw new Error('Historia clínica no encontrada');
       }

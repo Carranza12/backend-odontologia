@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards,
 import { PatientService } from './patient.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
-import { Request } from 'express';
+import { Request, request } from 'express';
 import { AuthGuard } from 'src/user-auth/auth.guard';
 
 @Controller('api/patients')
@@ -42,7 +42,7 @@ export class PatientController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto) {
+  update(@Param('id') id: string, @Body() updatePatientDto: any) { 
     return this.patientService.updateHistoriaClinica(id, updatePatientDto);
   }
 

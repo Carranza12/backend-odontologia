@@ -44,7 +44,7 @@ export class perfilMaestroService {
       }
     });
 
-    body.firma = `http://localhost:3000/firmas/${userId}_firma.jpg`;
+    body.firma = `http:localhost:3000/firmas/${userId}_firma.jpg`;
 
     let newPerfilMaestro;
 
