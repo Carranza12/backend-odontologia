@@ -24,21 +24,10 @@ export class perfilMaestroController {
   constructor(private readonly perfil_maestro: perfilMaestroService) {}
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor('firma', {
-      storage: diskStorage({
-        destination: './src/assets/firmas',
-        filename: renameImage,
-      }),
-      fileFilter,
-    }),
-  )
   create(
-    @UploadedFile() firma: Express.Multer.File,
     @Req() request: Request,
   ) {
-    console.log("firma recibida:", firma)
-    return this.perfil_maestro.createOrUpdatePerfilMaestro(request, firma);
+    return this.perfil_maestro.createOrUpdatePerfilMaestro(request);
   }
 
   @Get()
