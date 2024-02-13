@@ -55,10 +55,22 @@ export class UserAuthService {
       throw new UnauthorizedException('An error occurred while logging in');
     }
   }
-  async getUsers(): Promise<User[]> {
+  async getUsers(page:number, limit: number): Promise<any> {
     try {
-      const users = await this.userModel.find({});
-      return users;
+      const totalUsers = await this.userModel.countDocuments();
+      const totalPages = Math.ceil(totalUsers / limit);
+      if (page < 1 || page > totalPages) {
+        throw new Error('Página no válida');
+      }
+      const users = await this.userModel.find({})
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .exec();
+      return {
+        items: users,
+        currentPage: page,
+        totalPages: Array.from({ length: totalPages }, (_, i) => (i + 1).toString()),
+      }
     } catch (error) {
       this.logger.error(
         `An error occurred while retrieving users: ${error.message}`,

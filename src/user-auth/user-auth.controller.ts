@@ -17,7 +17,7 @@ import {
 import { UserAuthService } from './user-auth.service';
 import { User } from './schemas/user-auth.schema';
 import { AuthGuard } from './auth.guard';
-import { Request } from 'express';
+import { Request, } from 'express';
 import { UserTrabajador } from './schemas/user-trabajador.schema';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -125,12 +125,13 @@ export class UserAuthController {
 
   @Get('users')
   @UseGuards(AuthGuard)
-  async getUsers(@Req() request: Request): Promise<User[]> {
+  async getUsers(@Req() request: any): Promise<User[]> {
     try {
-      const user = await this.userAuthService.getUserById(request.user.userId);
-
+      const user = await this.userAuthService.getUserById(request.user.userId);;
+      request.query.page = request.query.page ? request.query.page : 1;
+      console.log("page:",  request.query)
       if (user.role_default === 'superAdmin') {
-        return this.userAuthService.getUsers();
+        return this.userAuthService.getUsers(request.query.page, 5);
       }
 
       throw new UnauthorizedException(
