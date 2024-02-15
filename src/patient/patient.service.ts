@@ -100,18 +100,16 @@ export class PatientService {
     let nueva_id_historia: string;
     let idExiste: boolean = true;
 
-    // Intentar generar una nueva ID única para la historia clínica hasta que se encuentre una que no exista
     while (idExiste) {
-      nueva_id_historia = this.generateRandomId(8); // Genera una nueva ID aleatoria
-      // Verificar si la nueva ID de historia clínica ya existe en la base de datos
-      const existingRecord = await this.historiaClinicaModel.findOne({ id_historia: nueva_id_historia });
-      idExiste = !!existingRecord; // Si existingRecord es null, idExiste será false y saldrá del bucle
+      nueva_id_historia = this.generateRandomId(8);
+      const existingRecord = await this.historiaClinicaModel.findOne({ codigo: nueva_id_historia });
+      idExiste = !!existingRecord;
     }
     console.log("nuevo id: ", nueva_id_historia)
     const historia_clinica_item: any = {
       Fecha: new Date().getTime(),
-      id_paciente: id_paciente, // ID del paciente
-      codigo: nueva_id_historia, // Nueva ID de historia clínica
+      id_paciente: id_paciente,
+      codigo: nueva_id_historia,
     };
     const res: any = await this.historiaClinicaModel.create(historia_clinica_item);
     return res._id;
@@ -119,8 +117,6 @@ export class PatientService {
 
   async updateHistoriaClinica(id_historia_clinica, nuevosDatos) {
     try {
-
-      // Comprueba si la historia clínica existe
       const historiaClinicaExistente = await this.historiaClinicaModel.findById(id_historia_clinica);
       let index = 1;
       for await (const consulta of nuevosDatos.consultas) {
