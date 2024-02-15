@@ -25,6 +25,11 @@ export class PatientController {
   findOne(@Param('id') id: string) {
     return this.patientService.findOne(+id);
   }
+  @Get('/codigo/:codigo_id')
+  findByCode(@Param('codigo_id') codigo_id: string) {
+    return this.patientService.findHistoriaClinicaByCodigo(codigo_id);
+  }
+
 
   @Get('/historia_clinica/:id')
   findHistoriaClinica(@Param('id') historia_clinica_id: string) {

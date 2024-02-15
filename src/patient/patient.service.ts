@@ -23,7 +23,7 @@ export class PatientService {
     @InjectModel(HistoriaClinica.name)
     private readonly historiaClinicaModel: Model<HistoriaClinicaDocument>,
     private _user_auth: UserAuthService,
-  ) { }
+  ) {}
 
   async create(req: any) {
     const { body } = req;
@@ -68,9 +68,8 @@ export class PatientService {
 
       await this.patientModel.updateOne(
         { _id: newPatient._id },
-        { $set: { historia_clinica_id: historia_clinica_id } }
+        { $set: { historia_clinica_id: historia_clinica_id } },
       );
-
 
       return {
         message: 'Paciente creado exitosamente',
@@ -88,7 +87,8 @@ export class PatientService {
   }
 
   generateRandomId(length: number): string {
-    const characters: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters: string =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let id: string = '';
     for (let i: number = 0; i < length; i++) {
       id += characters.charAt(Math.floor(Math.random() * characters.length));
@@ -104,24 +104,28 @@ export class PatientService {
     while (idExiste) {
       nueva_id_historia = this.generateRandomId(8); // Genera una nueva ID aleatoria
       // Verificar si la nueva ID de historia clínica ya existe en la base de datos
-      const existingRecord = await this.historiaClinicaModel.findOne({ id_historia: nueva_id_historia });
+      const existingRecord = await this.historiaClinicaModel.findOne({
+        id_historia: nueva_id_historia,
+      });
       idExiste = !!existingRecord; // Si existingRecord es null, idExiste será false y saldrá del bucle
     }
-    console.log("nuevo id: ", nueva_id_historia)
+    console.log('nuevo id: ', nueva_id_historia);
     const historia_clinica_item: any = {
       Fecha: new Date().getTime(),
       id_paciente: id_paciente, // ID del paciente
       codigo: nueva_id_historia, // Nueva ID de historia clínica
     };
-    const res: any = await this.historiaClinicaModel.create(historia_clinica_item);
+    const res: any = await this.historiaClinicaModel.create(
+      historia_clinica_item,
+    );
     return res._id;
   }
 
   async updateHistoriaClinica(id_historia_clinica, nuevosDatos) {
     try {
-
       // Comprueba si la historia clínica existe
-      const historiaClinicaExistente = await this.historiaClinicaModel.findById(id_historia_clinica);
+      const historiaClinicaExistente =
+        await this.historiaClinicaModel.findById(id_historia_clinica);
       let index = 1;
       for await (const consulta of nuevosDatos.consultas) {
         if (consulta.evidencia1) {
@@ -130,21 +134,28 @@ export class PatientService {
             const mimeType = matches[1];
             const base64Data = matches[2];
             const extension = mimeType.split('/')[1];
-            const uploadsDir = path.join(__dirname, '../..', 'src', 'assets', 'historias_clinicas', `${id_historia_clinica}`, `consulta_${index}`);
+            const uploadsDir = path.join(
+              __dirname,
+              '../..',
+              'src',
+              'assets',
+              'historias_clinicas',
+              `${id_historia_clinica}`,
+              `consulta_${index}`,
+            );
             try {
               await fs.ensureDir(uploadsDir);
 
               const filename = `Consulta_${index}_evidencia1.${extension}`;
               const filePath = path.join(uploadsDir, filename);
               await fs.writeFile(filePath, base64Data, 'base64');
-              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`
+              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`;
               nuevosDatos.consultas[index - 1].evidencia1 = imgPath;
               console.log('Archivo guardado con éxito:', imgPath);
             } catch (error) {
               console.error('Error al guardar el archivo:', error);
             }
           }
-
         }
         if (consulta.evidencia2) {
           const matches = consulta.evidencia2.match(/^data:(.*);base64,(.*)$/);
@@ -152,21 +163,28 @@ export class PatientService {
             const mimeType = matches[1];
             const base64Data = matches[2];
             const extension = mimeType.split('/')[1];
-            const uploadsDir = path.join(__dirname, '../..', 'src', 'assets', 'historias_clinicas', `${id_historia_clinica}`, `consulta_${index}`);
+            const uploadsDir = path.join(
+              __dirname,
+              '../..',
+              'src',
+              'assets',
+              'historias_clinicas',
+              `${id_historia_clinica}`,
+              `consulta_${index}`,
+            );
             try {
               await fs.ensureDir(uploadsDir);
 
               const filename = `Consulta_${index}_evidencia2.${extension}`;
               const filePath = path.join(uploadsDir, filename);
               await fs.writeFile(filePath, base64Data, 'base64');
-              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`
+              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`;
               nuevosDatos.consultas[index - 1].evidencia2 = imgPath;
               console.log('Archivo guardado con éxito:', imgPath);
             } catch (error) {
               console.error('Error al guardar el archivo:', error);
             }
           }
-
         }
         if (consulta.evidencia3) {
           const matches = consulta.evidencia3.match(/^data:(.*);base64,(.*)$/);
@@ -174,21 +192,28 @@ export class PatientService {
             const mimeType = matches[1];
             const base64Data = matches[2];
             const extension = mimeType.split('/')[1];
-            const uploadsDir = path.join(__dirname, '../..', 'src', 'assets', 'historias_clinicas', `${id_historia_clinica}`, `consulta_${index}`);
+            const uploadsDir = path.join(
+              __dirname,
+              '../..',
+              'src',
+              'assets',
+              'historias_clinicas',
+              `${id_historia_clinica}`,
+              `consulta_${index}`,
+            );
             try {
               await fs.ensureDir(uploadsDir);
 
               const filename = `Consulta_${index}_evidencia3.${extension}`;
               const filePath = path.join(uploadsDir, filename);
               await fs.writeFile(filePath, base64Data, 'base64');
-              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`
+              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`;
               nuevosDatos.consultas[index - 1].evidencia3 = imgPath;
               console.log('Archivo guardado con éxito:', imgPath);
             } catch (error) {
               console.error('Error al guardar el archivo:', error);
             }
           }
-
         }
         if (consulta.evidencia4) {
           const matches = consulta.evidencia4.match(/^data:(.*);base64,(.*)$/);
@@ -196,21 +221,28 @@ export class PatientService {
             const mimeType = matches[1];
             const base64Data = matches[2];
             const extension = mimeType.split('/')[1];
-            const uploadsDir = path.join(__dirname, '../..', 'src', 'assets', 'historias_clinicas', `${id_historia_clinica}`, `consulta_${index}`);
+            const uploadsDir = path.join(
+              __dirname,
+              '../..',
+              'src',
+              'assets',
+              'historias_clinicas',
+              `${id_historia_clinica}`,
+              `consulta_${index}`,
+            );
             try {
               await fs.ensureDir(uploadsDir);
 
               const filename = `Consulta_${index}_evidencia4.${extension}`;
               const filePath = path.join(uploadsDir, filename);
               await fs.writeFile(filePath, base64Data, 'base64');
-              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`
+              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`;
               nuevosDatos.consultas[index - 1].evidencia4 = imgPath;
               console.log('Archivo guardado con éxito:', imgPath);
             } catch (error) {
               console.error('Error al guardar el archivo:', error);
             }
           }
-
         }
         if (consulta.evidencia5) {
           const matches = consulta.evidencia5.match(/^data:(.*);base64,(.*)$/);
@@ -218,21 +250,28 @@ export class PatientService {
             const mimeType = matches[1];
             const base64Data = matches[2];
             const extension = mimeType.split('/')[1];
-            const uploadsDir = path.join(__dirname, '../..', 'src', 'assets', 'historias_clinicas', `${id_historia_clinica}`, `consulta_${index}`);
+            const uploadsDir = path.join(
+              __dirname,
+              '../..',
+              'src',
+              'assets',
+              'historias_clinicas',
+              `${id_historia_clinica}`,
+              `consulta_${index}`,
+            );
             try {
               await fs.ensureDir(uploadsDir);
 
               const filename = `Consulta_${index}_evidencia5.${extension}`;
               const filePath = path.join(uploadsDir, filename);
               await fs.writeFile(filePath, base64Data, 'base64');
-              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`
+              const imgPath = `http:localhost:3000/historias_clinicas/${id_historia_clinica}/consulta_${index}/${filename}`;
               nuevosDatos.consultas[index - 1].evidencia5 = imgPath;
               console.log('Archivo guardado con éxito:', imgPath);
             } catch (error) {
               console.error('Error al guardar el archivo:', error);
             }
           }
-
         }
         index++;
       }
@@ -246,23 +285,25 @@ export class PatientService {
       historiaClinicaExistente.set(nuevosDatos);
       const historiaClinicaActualizada = await historiaClinicaExistente.save();
 
-      const pacienteExistente = await this.patientModel.findById(historiaClinicaActualizada.id_paciente);
+      const pacienteExistente = await this.patientModel.findById(
+        historiaClinicaActualizada.id_paciente,
+      );
       if (!pacienteExistente) {
         throw new Error('paciente no encontrado');
       }
       pacienteExistente.set(pacienteBody);
       const pacienteExistenteActualizado = await pacienteExistente.save();
 
-
       return {
         historia_clinica: historiaClinicaActualizada,
-        paciente: pacienteExistenteActualizado
-      }
+        paciente: pacienteExistenteActualizado,
+      };
     } catch (error) {
-      throw new Error(`Error al actualizar la historia clínica: ${error.message}`);
+      throw new Error(
+        `Error al actualizar la historia clínica: ${error.message}`,
+      );
     }
   }
-
 
   async findAll() {
     try {
@@ -276,11 +317,11 @@ export class PatientService {
   async getHistoriasByMateria(materia_id: string) {
     try {
       const historias = await this.historiaClinicaModel.find({
-        "consultas": {
-          "$elemMatch": {
-            "practica_para_la_materia.value": `${materia_id}`
-          }
-        }
+        consultas: {
+          $elemMatch: {
+            'practica_para_la_materia.value': `${materia_id}`,
+          },
+        },
       });
       return historias;
     } catch (error) {
@@ -292,8 +333,30 @@ export class PatientService {
     return `This action returns a #${id} patient`;
   }
 
+  async findHistoriaClinicaByCodigo(codigo_id: string) {
+    console.log("COPDIGO IDD:", codigo_id)
+    const historia_clinica: any = await this.historiaClinicaModel.findOne({
+      codigo: codigo_id,
+    });
+    console.log("item:", historia_clinica)
+    if (!historia_clinica) {
+      return {
+        message: 'Historia clínica no encontrada',
+        item: null,
+        error: [],
+      };
+    }
+    return {
+      message: 'Historia clínica encontrada',
+      item: historia_clinica,
+      error: [],
+    };
+  }
+
   async findHistoriaClinica(historia_clinica_id: string) {
-    const historia_clinica: any = await this.historiaClinicaModel.findOne({ _id: historia_clinica_id });
+    const historia_clinica: any = await this.historiaClinicaModel.findOne({
+      _id: historia_clinica_id,
+    });
     if (!historia_clinica) {
       return {
         message: 'Historia clínica no encontrada',
@@ -302,7 +365,9 @@ export class PatientService {
       };
     }
 
-    const paciente: any = await this.patientModel.findOne({ _id: historia_clinica.id_paciente });
+    const paciente: any = await this.patientModel.findOne({
+      _id: historia_clinica.id_paciente,
+    });
 
     if (!paciente) {
       return {
@@ -325,11 +390,11 @@ export class PatientService {
   async findHistoriasClinicasPorEstudiante(id_estudiante: string) {
     try {
       const historias_clinicas = await this.historiaClinicaModel.find({
-        'consultas': {
+        consultas: {
           $elemMatch: {
-            'estudiante.id_estudiante': id_estudiante
-          }
-        }
+            'estudiante.id_estudiante': id_estudiante,
+          },
+        },
       });
 
       if (historias_clinicas.length === 0) {
@@ -351,7 +416,6 @@ export class PatientService {
       };
     }
   }
-
 
   update(id: number, updatePatientDto: UpdatePatientDto) {
     return `This action updates a #${id} patient`;
