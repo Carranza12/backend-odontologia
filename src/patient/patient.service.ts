@@ -111,7 +111,7 @@ export class PatientService {
     const historia_clinica_item: any = {
       Fecha: new Date().getTime(),
       id_paciente: id_paciente, // ID del paciente
-      _id: nueva_id_historia, // Nueva ID de historia clínica
+      codigo: nueva_id_historia, // Nueva ID de historia clínica
     };
     const res: any = await this.historiaClinicaModel.create(historia_clinica_item);
     return res._id;

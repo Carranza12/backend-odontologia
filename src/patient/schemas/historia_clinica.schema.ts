@@ -10,6 +10,9 @@ export class HistoriaClinica {
   @Prop({ required: true })
   id_paciente: string;
 
+  @Prop({ required: true })
+  codigo: string;
+
   @Prop({ required: false })
   alcoholismo: boolean;
 
