@@ -14,6 +14,10 @@ export class PatientController {
   create(@Req() request: Request) {
     return this.patientService.create(request);
   }
+  @Post('/diagnostico')
+  createDiagnostico(@Req() request: Request) {
+    return this.patientService.createDiagnostico(request);
+  }
 
   @Get()
   findAll() {

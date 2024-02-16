@@ -14,6 +14,7 @@ import {
   HistoriaClinicaDocument,
 } from './schemas/historia_clinica.schema';
 import * as path from 'path';
+import { diagnostico, diagnosticoDocument } from './schemas/diagnostico.schema';
 
 @Injectable()
 export class PatientService {
@@ -22,6 +23,8 @@ export class PatientService {
     private readonly patientModel: Model<PatientDocument>,
     @InjectModel(HistoriaClinica.name)
     private readonly historiaClinicaModel: Model<HistoriaClinicaDocument>,
+    @InjectModel(diagnostico.name)
+    private readonly diagnosticoModel: Model<diagnosticoDocument>,
     private _user_auth: UserAuthService,
   ) {}
 
@@ -80,6 +83,49 @@ export class PatientService {
       console.error('Error al crear el paciente:', error);
       return {
         message: 'Error al crear el paciente',
+        item: [],
+        error,
+      };
+    }
+  }
+
+  async createDiagnostico(req: any) {
+    const { body } = req;
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('Token de autorización no proporcionado');
+    }
+    const token = authHeader.slice(7);
+
+    const decodedToken: any = jwt.decode(token);
+
+    if (!decodedToken || !decodedToken.userId) {
+      throw new UnauthorizedException('Token de autorización no válido');
+    }
+
+    const currentUser = await this._user_auth.getUserById(decodedToken.userId);
+
+    if (currentUser.role_default !== 'trabajador') {
+      throw new UnauthorizedException(
+        'No tienes permiso para crear un nuevo paciente.',
+      );
+    }
+    try {
+      
+      const newDiagnostico: any = await this.diagnosticoModel.create({
+        body
+      });
+
+      return {
+        message: 'Paciente creado exitosamente',
+        item:  newDiagnostico,
+        error: null,
+      };
+    } catch (error) {
+      console.error('Error al crear el diagnostico:', error);
+      return {
+        message: 'Error al crear el diagnostico',
         item: [],
         error,
       };
