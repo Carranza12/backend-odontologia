@@ -100,7 +100,6 @@ export class PatientService {
     let nueva_id_historia: string;
     let idExiste: boolean = true;
 
-    // Intentar generar una nueva ID única para la historia clínica hasta que se encuentre una que no exista
     while (idExiste) {
       nueva_id_historia = this.generateRandomId(8); // Genera una nueva ID aleatoria
       // Verificar si la nueva ID de historia clínica ya existe en la base de datos
@@ -112,8 +111,8 @@ export class PatientService {
     console.log('nuevo id: ', nueva_id_historia);
     const historia_clinica_item: any = {
       Fecha: new Date().getTime(),
-      id_paciente: id_paciente, // ID del paciente
-      codigo: nueva_id_historia, // Nueva ID de historia clínica
+      id_paciente: id_paciente,
+      codigo: nueva_id_historia,
     };
     const res: any = await this.historiaClinicaModel.create(
       historia_clinica_item,
