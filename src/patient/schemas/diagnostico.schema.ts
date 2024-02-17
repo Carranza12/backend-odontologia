@@ -10,6 +10,16 @@ export class diagnostico {
   odontograma: string;
 
   @Prop({ required: false })
+  fecha_de_la_consulta: number;
+
+  @Prop({ required: false })
+  motivos_de_la_consulta: string;
+
+  
+  @Prop({ required: false })
+  comentarios_sobre_la_consulta: string;
+
+  @Prop({ required: false })
   cabeza_craneo: string;
 
   @Prop({ required: false })
@@ -25,7 +35,7 @@ export class diagnostico {
   boca_encia: string;
 
   @Prop({ required: false })
-  boca_psio_de_boca: string;
+  boca_piso_de_boca: string;
 
   @Prop({ required: false })
   boca_lengua: string;
@@ -34,8 +44,10 @@ export class diagnostico {
   boca_paladar: string;
 
   @Prop({ required: false })
-  atm_anexos: string;
+  atm: string;
 
+  @Prop({ required: false })
+  atm_anexos: string;
 
   @Prop({ required: false })
   atm_macizo_oseo: string;
@@ -63,6 +75,21 @@ export class diagnostico {
 
   @Prop({ required: false })
   paciente_referido_clinica: string;
+
+  @Prop({ required: false })
+  evidencia1: string;
+
+  @Prop({ required: false })
+  evidencia2: string;
+
+  @Prop({ required: false })
+  evidencia3: string;
+
+  @Prop({ required: false })
+  evidencia4: string;
+
+  @Prop({ required: false })
+  evidencia5: string;
 }
 
 export type diagnosticoDocument = diagnostico & Document;

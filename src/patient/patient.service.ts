@@ -104,11 +104,12 @@ export class PatientService {
       throw new UnauthorizedException('Token de autorización no válido');
     }
 
+   
     const currentUser = await this._user_auth.getUserById(decodedToken.userId);
 
-    if (currentUser.role_default !== 'trabajador') {
+    if (currentUser.role_default !== 'estudiante') {
       throw new UnauthorizedException(
-        'No tienes permiso para crear un nuevo paciente.',
+        'No tienes permiso para crear un nuevo diagnostico.',
       );
     }
     try {
@@ -117,8 +118,40 @@ export class PatientService {
         body
       });
 
+      const diagnostico_id = newDiagnostico._id
+      if (body.evidencia1) {
+        const matches = body.evidencia1.match(/^data:(.*);base64,(.*)$/);
+        if (matches && matches.length === 3) {
+          const mimeType = matches[1];
+          const base64Data = matches[2];
+          const extension = mimeType.split('/')[1];
+          const uploadsDir = path.join(
+            __dirname,
+            '../..',
+            'src',
+            'assets',
+            'historias_clinicas',
+            `${body.historia_clinica_id}`,
+            `diagnosticos`,
+            `${diagnostico_id}_evidencia1`,
+          );
+          try {
+            await fs.ensureDir(uploadsDir);
+
+            const filename = `evidencia1`;
+            const filePath = path.join(uploadsDir, filename);
+            await fs.writeFile(filePath, base64Data, 'base64');
+            const imgPath = `http:localhost:3000/historias_clinicas/${body.historia_clinica_id}/diagnosticos/${filename}`;
+            body.evidencia1 = imgPath;
+            console.log('Archivo guardado con éxito:', imgPath);
+          } catch (error) {
+            console.error('Error al guardar el archivo:', error);
+          }
+        }
+
+    }
       return {
-        message: 'Paciente creado exitosamente',
+        message: 'Diagnostico creado exitosamente',
         item:  newDiagnostico,
         error: null,
       };
