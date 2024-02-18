@@ -10,7 +10,7 @@ export class diagnostico {
   odontograma: string;
 
   @Prop({ required: false })
-  fecha_de_la_consulta: number;
+  fecha_de_la_consulta: string;
 
   @Prop({ required: false })
   motivos_de_la_consulta: string;

@@ -27,7 +27,7 @@ import { env } from 'process';
       serveRoot: '/firmas', 
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'src', 'assets', 'historias_clinicas'), 
+      rootPath: join(__dirname, '..', 'src', 'assets', 'historias_clinicas','diagnosticos'), 
       serveRoot: '/historias_clinicas', 
     }),
     MongooseModule.forRoot('mongodb://localhost/odontologia'),
