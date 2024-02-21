@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { ConsultaHistoriaClinicaI } from '../entities/consulta_historia.interface';
 
 @Schema({ timestamps: true })
 export class HistoriaClinica {
@@ -12,6 +11,12 @@ export class HistoriaClinica {
 
   @Prop({ required: true })
   codigo: string;
+
+  @Prop({ required: false })
+  nombre_tutor: string;
+
+  @Prop({required: false})
+  firmaPaciente: string;
 
   @Prop({ required: false })
   alcoholismo: boolean;
@@ -317,11 +322,6 @@ export class HistoriaClinica {
   @Prop({ required: false })
   exploracion_fisica_peso: string;
 
-  @Prop({ required: false })
-  consultas: ConsultaHistoriaClinicaI[];
-
-  @Prop({ required: false })
-  odontogramas: any[];
 
   @Prop({ required: false })
   antecedentes_hereditarios: string;
