@@ -7,6 +7,7 @@ import { UserAuthService } from 'src/user-auth/user-auth.service';
 import { UserAuthModule } from 'src/user-auth/user-auth.module';
 import { HistoriaClinica, HistoriaClinicaSchema } from './schemas/historia_clinica.schema';
 import { diagnostico, diagnosticoSchema } from './schemas/diagnostico.schema';
+import { Tratamiento, TratamientoSchema } from './schemas/tratamiento.schema';
 
 @Module({
   controllers: [PatientController],
@@ -29,6 +30,12 @@ import { diagnostico, diagnosticoSchema } from './schemas/diagnostico.schema';
       {
         name: diagnostico.name,
         schema: diagnosticoSchema,
+      },
+    ]),
+    MongooseModule.forFeature([
+      {
+        name: Tratamiento.name,
+        schema: TratamientoSchema,
       },
     ]),
   ]

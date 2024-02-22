@@ -38,6 +38,12 @@ export class PatientController {
     return this.patientService.findHistoriaClinicaByCodigo(codigo_id);
   }
 
+  @Get('/diagnostico-historia-clinica/:historia_clinica_id')
+  findByHistoriaClinicaID(@Param('historia_clinica_id') historia_clinica_id: string) {
+    return this.patientService.findDiagnosticosByHistoriaClinicaID(historia_clinica_id);
+  }
+
+
 
   @Get('/historia_clinica/:id')
   findHistoriaClinica(@Param('id') historia_clinica_id: string) {

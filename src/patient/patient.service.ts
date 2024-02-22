@@ -390,6 +390,26 @@ export class PatientService {
     };
   }
 
+  async findDiagnosticosByHistoriaClinicaID(historia_clinica_id: string) {
+    console.log('IDD:', historia_clinica_id);
+    const diagnosticos: any[] = await this.diagnosticoModel.find({
+      historia_clinica_id: historia_clinica_id,
+    });
+    console.log('items:', diagnosticos);
+    if (!diagnosticos || diagnosticos.length === 0) {
+      return {
+        message: 'Diagnósticos no encontrados',
+        items: [],
+        error: [],
+      };
+    }
+    return {
+      message: 'Diagnósticos encontrados',
+      items: diagnosticos,
+      error: [],
+    };
+  }
+
   async findHistoriaClinica(historia_clinica_id: string) {
     const historia_clinica: any = await this.historiaClinicaModel.findOne({
       _id: historia_clinica_id,
