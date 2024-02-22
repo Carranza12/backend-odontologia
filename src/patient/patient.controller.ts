@@ -18,6 +18,10 @@ export class PatientController {
   createDiagnostico(@Req() request: Request) {
     return this.patientService.createDiagnostico(request);
   }
+  @Post('/tratamientos')
+  createTratamiento(@Req() request: Request) {
+    return this.patientService.createDiagnostico(request);
+  }
 
   @Get()
   findAll() {

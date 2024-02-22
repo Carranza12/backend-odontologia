@@ -15,6 +15,7 @@ import {
 } from './schemas/historia_clinica.schema';
 import * as path from 'path';
 import { diagnostico, diagnosticoDocument } from './schemas/diagnostico.schema';
+import { Tratamiento, TratamientoDocument } from './schemas/tratamiento.schema';
 
 @Injectable()
 export class PatientService {
@@ -25,6 +26,8 @@ export class PatientService {
     private readonly historiaClinicaModel: Model<HistoriaClinicaDocument>,
     @InjectModel(diagnostico.name)
     private readonly diagnosticoModel: Model<diagnosticoDocument>,
+    @InjectModel(Tratamiento.name)
+    private readonly TratamientoModel: Model<TratamientoDocument>,
     private _user_auth: UserAuthService,
   ) {}
 
@@ -174,6 +177,96 @@ export class PatientService {
       console.error('Error al crear el diagnostico:', error);
       return {
         message: 'Error al crear el diagnostico',
+        item: [],
+        error,
+      };
+    }
+  }
+  async createTratamiento(req: any) {
+    const { body } = req;
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('Token de autorización no proporcionado');
+    }
+    const token = authHeader.slice(7);
+
+    const decodedToken: any = jwt.decode(token);
+
+    if (!decodedToken || !decodedToken.userId) {
+      throw new UnauthorizedException('Token de autorización no válido');
+    }
+
+    const currentUser = await this._user_auth.getUserById(decodedToken.userId);
+
+    if (currentUser.role_default !== 'estudiante') {
+      throw new UnauthorizedException(
+        'No tienes permiso para crear un nuevo diagnostico.',
+      );
+    }
+
+    try {
+      const newTratamiento: any = await this.TratamientoModel.create({
+        ...body,
+      });
+/* 
+      const imagenes = [
+        'odontograma',
+        'evidencia1',
+        'evidencia2',
+        'evidencia3',
+        'evidencia4',
+        'evidencia5',
+      ]; */
+
+      /*      const diagnostico_id = newDiagnostico._id;
+
+      for (const imagen of imagenes) {
+        if (body[imagen]) {
+          const matches = body[imagen].match(/^data:(.*);base64,(.*)$/);
+          if (matches && matches.length === 3) {
+            const mimeType = matches[1];
+            const base64Data = matches[2];
+            const extension = mimeType.split('/')[1];
+            const uploadsDir = path.join(
+              __dirname,
+              '../..',
+              'src',
+              'assets',
+              'historias_clinicas',
+              `diagnosticos`,
+              `${diagnostico_id}_${body[imagen]}`,
+            );
+            try {
+              await fs.ensureDir(uploadsDir);
+
+              const filename = `${body[imagen]}${extension}`;
+              const filePath = path.join(uploadsDir, filename);
+              await fs.writeFile(filePath, base64Data, 'base64');
+              const imgPath = `http:localhost:3000/historias_clinicas/${filename}`;
+              body[imagen] = imgPath;
+              console.log('Archivo guardado con éxito:', imgPath);
+            } catch (error) {
+              console.error('Error al guardar el archivo:', error);
+            }
+          }
+        }
+      }
+
+      const diagnosticoExistente =
+        await this.diagnosticoModel.findById(diagnostico_id);
+      diagnosticoExistente.set({ ...body });
+      const diagnosticoActualizado = await diagnosticoExistente.save(); */
+
+      return {
+        message: 'Tratamiento creado exitosamente',
+        item: newTratamiento,
+        error: null,
+      };
+    } catch (error) {
+      console.error('Error al crear el tratamiento:', error);
+      return {
+        message: 'Error al crear el tratamiento',
         item: [],
         error,
       };
