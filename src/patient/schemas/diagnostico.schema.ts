@@ -6,6 +6,12 @@ export class diagnostico {
   @Prop({ required: true })
   historia_clinica_id: string;
 
+  @Prop({ required: true })
+  alumno_id: string;
+
+  @Prop({ required: false })
+  tratamiento_id: string;
+
   @Prop({ required: false })
   odontograma: string;
 

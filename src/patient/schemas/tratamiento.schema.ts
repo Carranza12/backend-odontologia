@@ -12,6 +12,9 @@ export class Tratamiento {
     @Prop({ required: false })
     maestro_id: string;
 
+    @Prop({ required: true })
+    alumno_id: string;
+
     @Prop({ required: false })
     tratamiento: string;
 
