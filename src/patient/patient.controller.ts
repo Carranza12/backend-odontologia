@@ -20,7 +20,7 @@ export class PatientController {
   }
   @Post('/tratamientos')
   createTratamiento(@Req() request: Request) {
-    return this.patientService.createDiagnostico(request);
+    return this.patientService.createTratamiento(request);
   }
 
   @Get()
@@ -43,7 +43,10 @@ export class PatientController {
     return this.patientService.findDiagnosticosByHistoriaClinicaID(historia_clinica_id);
   }
 
-
+  @Get('/tratamientos-historia-clinica/:historia_clinica_id')
+  findTratamientosByHistoriaClinicaID(@Param('historia_clinica_id') historia_clinica_id: string) {
+    return this.patientService.findTratamientosByHistoriaClinicaID(historia_clinica_id);
+  }
 
   @Get('/historia_clinica/:id')
   findHistoriaClinica(@Param('id') historia_clinica_id: string) {
@@ -54,6 +57,11 @@ export class PatientController {
   @Get('/diagnostico/:id')
   findDiagnostico(@Param('id') diagnostico_id: string) {
     return this.patientService.findDiagnostico(diagnostico_id);
+  }
+
+  @Get('/tratamientos/:id')
+  findTratamiento(@Param('id') tratamiento_id: string) {
+    return this.patientService.findTratamiento(tratamiento_id);
   }
 
   @Get('/historia_clinica/materia/:materia_id')

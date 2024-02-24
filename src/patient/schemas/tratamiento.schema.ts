@@ -19,13 +19,13 @@ export class Tratamiento {
     tratamiento: string;
 
     @Prop({ required: false })
-    Alumno: string;
+    alumno: string;
 
     @Prop({ required: false })
     matricula: string;
 
     @Prop({ required: false })
-    no_expediente: string;
+    expediente: string;
 
     @Prop({ required: false })
     fecha_tratamiento: string;

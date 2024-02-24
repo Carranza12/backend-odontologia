@@ -209,55 +209,12 @@ export class PatientService {
       const newTratamiento: any = await this.TratamientoModel.create({
         ...body,
       });
-/* 
-      const imagenes = [
-        'odontograma',
-        'evidencia1',
-        'evidencia2',
-        'evidencia3',
-        'evidencia4',
-        'evidencia5',
-      ]; */
 
-      /*      const diagnostico_id = newDiagnostico._id;
-
-      for (const imagen of imagenes) {
-        if (body[imagen]) {
-          const matches = body[imagen].match(/^data:(.*);base64,(.*)$/);
-          if (matches && matches.length === 3) {
-            const mimeType = matches[1];
-            const base64Data = matches[2];
-            const extension = mimeType.split('/')[1];
-            const uploadsDir = path.join(
-              __dirname,
-              '../..',
-              'src',
-              'assets',
-              'historias_clinicas',
-              `diagnosticos`,
-              `${diagnostico_id}_${body[imagen]}`,
-            );
-            try {
-              await fs.ensureDir(uploadsDir);
-
-              const filename = `${body[imagen]}${extension}`;
-              const filePath = path.join(uploadsDir, filename);
-              await fs.writeFile(filePath, base64Data, 'base64');
-              const imgPath = `http:localhost:3000/historias_clinicas/${filename}`;
-              body[imagen] = imgPath;
-              console.log('Archivo guardado con éxito:', imgPath);
-            } catch (error) {
-              console.error('Error al guardar el archivo:', error);
-            }
-          }
-        }
-      }
-
-      const diagnosticoExistente =
-        await this.diagnosticoModel.findById(diagnostico_id);
-      diagnosticoExistente.set({ ...body });
-      const diagnosticoActualizado = await diagnosticoExistente.save(); */
-
+      await this.diagnosticoModel.updateOne(
+        { _id: body.diagnostico_id },
+        { tratamiento_id: newTratamiento._id }
+    );
+    
       return {
         message: 'Tratamiento creado exitosamente',
         item: newTratamiento,
@@ -410,6 +367,26 @@ export class PatientService {
     };
   }
 
+  async findTratamientosByHistoriaClinicaID(historia_clinica_id: string) {
+    console.log('IDD:', historia_clinica_id);
+    const tratamientos: any[] = await this.TratamientoModel.find({
+      historia_clinica_id: historia_clinica_id,
+    });
+    console.log('items:', tratamientos);
+    if (!tratamientos || tratamientos.length === 0) {
+      return {
+        message: 'tratamientos no encontrados',
+        items: [],
+        error: [],
+      };
+    }
+    return {
+      message: 'tratamientos encontrados',
+      items: tratamientos,
+      error: [],
+    };
+  }
+
   async findHistoriaClinica(historia_clinica_id: string) {
     const historia_clinica: any = await this.historiaClinicaModel.findOne({
       _id: historia_clinica_id,
@@ -460,6 +437,26 @@ export class PatientService {
     return {
       message: 'Información consultada con éxito',
       item: diagnostico,
+      error: [],
+    };
+  }
+
+  async findTratamiento(tratamiento_id: string) {
+    console.log("buscando tratamiento...")
+    const tratamiento: any = await this.TratamientoModel.findOne({
+      _id: tratamiento_id,
+    });
+    if (!tratamiento) {
+      return {
+        message: 'tratamiento no encontrado',
+        item: null,
+        error: [],
+      };
+    }
+
+    return {
+      message: 'Información consultada con éxito',
+      item: tratamiento,
       error: [],
     };
   }
