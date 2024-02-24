@@ -299,6 +299,29 @@ export class PatientService {
     }
   }
 
+  async updateTratamiento(id_tratamiento, nuevosDatos) {
+    try {
+      // Comprueba si la historia clínica existe
+      const tratamientoExistente =
+        await this.TratamientoModel.findById(id_tratamiento);
+
+      if (!tratamientoExistente) {
+        throw new Error('Tratamiento no encontrado');
+      }
+      
+      tratamientoExistente.set(nuevosDatos);
+      const tratamientoActualizado = await tratamientoExistente.save();
+
+      return {
+       message: "exitoso"
+      };
+    } catch (error) {
+      throw new Error(
+        `Error al actualizar el tratamiento: ${error.message}`,
+      );
+    }
+  }
+
   async findAll() {
     try {
       const patients = await this.patientModel.find({});
@@ -318,6 +341,17 @@ export class PatientService {
         },
       });
       return historias;
+    } catch (error) {
+      throw new Error('An error occurred while retrieving histories');
+    }
+  }
+
+  async getTratamientosByAlumno(alumno_id: string) {
+    try {
+      const tratamientos = await this.TratamientoModel.find({
+       alumno_id : alumno_id
+      });
+      return tratamientos;
     } catch (error) {
       throw new Error('An error occurred while retrieving histories');
     }

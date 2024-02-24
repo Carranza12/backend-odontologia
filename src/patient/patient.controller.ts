@@ -23,6 +23,11 @@ export class PatientController {
     return this.patientService.createTratamiento(request);
   }
 
+  @Put('/tratamientos/update/:id')
+  updateTratamiento(@Param('id') id: string, @Body() updatePatientDto: any, @Req() request: Request) {
+    return this.patientService.updateTratamiento(id, updatePatientDto);
+  }
+
   @Get()
   findAll() {
     return this.patientService.findAll();
@@ -67,6 +72,11 @@ export class PatientController {
   @Get('/historia_clinica/materia/:materia_id')
   findHistoriaByMateria(@Param('materia_id') materia_id: string) {
     return this.patientService.getHistoriasByMateria(materia_id);
+  }
+
+  @Get('/tratamientos/alumno/:alumno_id')
+  findTratamientosByAlumno(@Param('alumno_id') alumno_id: string) {
+    return this.patientService.getTratamientosByAlumno(alumno_id);
   }
 
   @Get('/historia_clinica/estudiante/:id_estudiante')

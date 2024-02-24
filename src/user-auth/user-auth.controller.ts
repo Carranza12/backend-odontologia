@@ -153,7 +153,7 @@ export class UserAuthController {
     try {
       const user = await this.userAuthService.getUserById(request.user.userId);
 
-      if (user.role_default === 'superAdmin' || user.role_default === 'estudiante') {
+      if (user.role_default === 'superAdmin' || user.role_default === 'estudiante' || user.role_default === 'maestro') {
         return this.userAuthService.getUserById(id);
       }
 

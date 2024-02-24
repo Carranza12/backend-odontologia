@@ -47,6 +47,10 @@ export class Tratamiento {
   
     @Prop({ required: false })
     evidencia5: string;
+
+    
+    @Prop({ required: false })
+    motivo_rechazo: string;
 }
 export type TratamientoDocument = Tratamiento & Document;
 export const TratamientoSchema = SchemaFactory.createForClass(Tratamiento);

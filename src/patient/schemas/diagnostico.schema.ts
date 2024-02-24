@@ -19,6 +19,9 @@ export class diagnostico {
   fecha_de_la_consulta: string;
 
   @Prop({ required: false })
+  clinica: string;
+
+  @Prop({ required: false })
   motivos_de_la_consulta: string;
 
   
