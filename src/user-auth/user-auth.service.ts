@@ -78,6 +78,30 @@ export class UserAuthService {
       throw new Error('An error occurred while retrieving users');
     }
   }
+
+  async getMaestros(page:number, limit: number): Promise<any> {
+    try {
+      const totalUsers = await this.userModel.countDocuments({ role_default: 'maestro' });
+      const totalPages = Math.ceil(totalUsers / limit);
+      if (page < 1 || page > totalPages) {
+        throw new Error('Página no válida');
+      }
+      const users = await this.userModel.find({ role_default: 'maestro' })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+      return {
+        items: users,
+        currentPage: page,
+        totalPages: Array.from({ length: totalPages }, (_, i) => (i + 1).toString()),
+      }
+    } catch (error) {
+      this.logger.error(
+        `An error occurred while retrieving users: ${error.message}`,
+      );
+      throw new Error('An error occurred while retrieving users');
+    }
+  }
   async getUserById(userId: string): Promise<User> {
     try {
       return await this.userModel.findById(userId).exec();
