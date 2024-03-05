@@ -41,7 +41,7 @@ export class perfilMaestroService {
           const filename = `${body.id_user}_firma.${extension}`;
           const filePath = path.join(uploadsDir, filename);
           await fs.writeFile(filePath, base64Data, 'base64');
-          body.firma = `http://localhost:3000/firmas/${userId}_firma.jpg`;
+          body.firma = `http://localhost:3000/firmas/${userId}_firma.${extension}`;
           console.log('Archivo guardado con éxito:', body.firma);
         } catch (error) {
           console.error('Error al guardar el archivo:', error);
