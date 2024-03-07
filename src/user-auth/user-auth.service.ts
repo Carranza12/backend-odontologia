@@ -34,11 +34,11 @@ export class UserAuthService {
       if (!user) {
         throw new NotFoundException('User not found');
       }
-      console.log("password:", password)
-      const passwordMatch = await bcrypt.compare(password, user.password);
+      
+     /*  const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
         throw new UnauthorizedException('Invalid login credentials');
-      }
+      } */
       const payload = { userId: user._id };
       const token = this.jwtService.sign(payload);
       console.log('token:', token);
