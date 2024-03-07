@@ -60,6 +60,10 @@ export class UserAuthService {
     try {
       const totalUsers = await this.userModel.countDocuments();
       const totalPages = Math.ceil(totalUsers / limit);
+      console.log("limit:", limit)
+      console.log("totalUsers:", totalUsers)
+      console.log("totalPages:", totalPages)
+      console.log("page:", page)
       if (page < 1 || page > totalPages) {
         throw new Error('Página no válida');
       }
@@ -84,6 +88,10 @@ export class UserAuthService {
     try {
       const totalUsers = await this.userModel.countDocuments({ role_default: 'maestro' });
       const totalPages = Math.ceil(totalUsers / limit);
+      console.log("limit:", limit)
+      console.log("totalUsers:", totalUsers)
+      console.log("totalPages:", totalPages)
+      console.log("page:", page)
       if (page < 1 || page > totalPages) {
         throw new Error('Página no válida');
       }
