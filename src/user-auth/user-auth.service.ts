@@ -68,7 +68,7 @@ export class UserAuthService {
       .limit(limit)
       .exec();
       return {
-        items: users,
+        items: users || [],
         currentPage: page,
         totalPages: Array.from({ length: totalPages }, (_, i) => (i + 1).toString()),
       }
@@ -92,7 +92,7 @@ export class UserAuthService {
         .limit(limit)
         .exec();
       return {
-        items: users,
+        items: users || [],
         currentPage: page,
         totalPages: Array.from({ length: totalPages }, (_, i) => (i + 1).toString()),
       }
