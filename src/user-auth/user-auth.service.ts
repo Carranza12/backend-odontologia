@@ -35,10 +35,10 @@ export class UserAuthService {
         throw new NotFoundException('User not found');
       }
       
-     /*  const passwordMatch = await bcrypt.compare(password, user.password);
+      const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
         throw new UnauthorizedException('Invalid login credentials');
-      } */
+      } 
       const payload = { userId: user._id };
       const token = this.jwtService.sign(payload);
       console.log('token:', token);
