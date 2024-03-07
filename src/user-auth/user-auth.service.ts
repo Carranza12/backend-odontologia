@@ -59,7 +59,7 @@ export class UserAuthService {
   async getUsers(page:number, limit: number): Promise<any> {
     try {
       const totalUsers = await this.userModel.countDocuments();
-      const totalPages = Math.ceil(totalUsers / limit);
+      const totalPages = totalUsers === 0 ? 0 : Math.ceil(totalUsers / limit);
       console.log("limit:", limit)
       console.log("totalUsers:", totalUsers)
       console.log("totalPages:", totalPages)
@@ -87,7 +87,7 @@ export class UserAuthService {
   async getMaestros(page:number, limit: number): Promise<any> {
     try {
       const totalUsers = await this.userModel.countDocuments({ role_default: 'maestro' });
-      const totalPages = Math.ceil(totalUsers / limit);
+      const totalPages = totalUsers === 0 ?  0 : Math.ceil(totalUsers / limit);
       console.log("limit:", limit)
       console.log("totalUsers:", totalUsers)
       console.log("totalPages:", totalPages)
@@ -116,7 +116,7 @@ export class UserAuthService {
   async getEstudiantes(page:number, limit: number): Promise<any> {
     try {
       const totalUsers = await this.userModel.countDocuments({ role_default: 'estudiante' });
-      const totalPages = Math.ceil(totalUsers / limit);
+      const totalPages = totalUsers === 0 ? 0 : Math.ceil(totalUsers / limit);
       if (page < 1 || page > totalPages) {
         throw new Error('Página no válida');
       }
