@@ -230,10 +230,17 @@ export class UserAuthService {
       if (!existingUser) {
         throw new NotFoundException('Usuario no encontrado');
       }
+      console.log("userData:", userData.password)
       let hash = "";
-      const { password, ...updatedUserData } = userData;
-      if(password){
-        hash = await bcrypt.hash(password, 10);
+      const {  ...updatedUserData } = userData;
+      if(!userData.password){
+        delete userData.password
+        console.log("no existe la contra")
+      }
+      if(userData.password ){
+        console.log("si existe pass...")
+        hash = await bcrypt.hash(userData. password, 10);
+        userData.password = hash
       }
      
 
@@ -262,12 +269,10 @@ export class UserAuthService {
       }
       let item_to_udate = {
         ...userData,
-        profileImage: userData.profileImage,
       }
 
-      if(hash){
-        item_to_udate.password = hash;
-      }
+
+      console.log("item_to_udate:", item_to_udate)
       await this.userModel.findByIdAndUpdate(userId, item_to_udate);
 
       return { message: 'Usuario actualizado con exito!' };
