@@ -12,8 +12,8 @@ export const renameImage = (req,file,callback) => {
 }
 
 export const fileFilter = (req, file, callback) => {
-    if(!file.originalname.match(/\.(jpg)$/)){
-        return callback( new Error("TIPO DE FORMATO INVALIDO"), false )
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+        return callback(new Error("TIPO DE FORMATO INVALIDO"), false);
     }
-    callback(null,true);
-}
+    callback(null, true);
+};
