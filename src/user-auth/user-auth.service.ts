@@ -175,7 +175,7 @@ export class UserAuthService {
       const hash = await bcrypt.hash(password, 10);
 
       if (profileImage) {
-        body.profileImage = `http:localhost:3000/avatars/${profileImage.filename}`;
+        body.profileImage = `http:148.212.195.49:3000/avatars/${profileImage.filename}`;
       }
 
       const userModelResult = await this.userModel.create({
@@ -204,7 +204,7 @@ export class UserAuthService {
         }
       });
 
-      body.profileImage = `http:localhost:3000/avatars/${userId}_avatar.jpg`;
+      body.profileImage = `http:148.212.195.49:3000/avatars/${userId}_avatar.jpg`;
 
       await this.userModel.findByIdAndUpdate(userId, {
         ...body,
@@ -238,7 +238,7 @@ export class UserAuthService {
      
 
       if (profileImage) {
-        userData.profileImage = `http:localhost:3000/avatars/${profileImage.filename}`;
+        userData.profileImage = `http:148.212.195.49:3000/avatars/${profileImage.filename}`;
         const srcPath = path.join(__dirname, '../..','src', 'assets', 'avatars');
         const sourceFilePath = path.join(srcPath, profileImage.filename);
         const destFilePath = path.join(srcPath, `${userId}_avatar${path.extname(profileImage.filename)}`);
@@ -257,7 +257,7 @@ export class UserAuthService {
           }
         });
   
-        userData.profileImage = `http:localhost:3000/avatars/${userId}_avatar.jpg`;
+        userData.profileImage = `http:148.212.195.49:3000/avatars/${userId}_avatar.jpg`;
   
       }
       let item_to_udate = {
