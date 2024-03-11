@@ -243,8 +243,9 @@ export class UserAuthService {
         userData.password = hash
       }
      
-
+      console.log("profileImage:", profileImage)
       if (profileImage) {
+        console.log("si existe la foto de perfil")
         userData.profileImage = `148.212.195.49:3000/avatars/${profileImage.filename}`;
         const srcPath = path.join(__dirname, '../..','src', 'assets', 'avatars');
         const sourceFilePath = path.join(srcPath, profileImage.filename);
