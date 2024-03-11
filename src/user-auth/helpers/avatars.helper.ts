@@ -7,7 +7,6 @@ export const renameImage = (req,file,callback) => {
     
    
     console.log("NAME:", name)
-    console.log(`${name}`)
     callback(null, `${name}${extension}`)
 }
 

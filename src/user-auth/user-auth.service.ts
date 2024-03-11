@@ -268,13 +268,11 @@ export class UserAuthService {
         userData.profileImage = `148.212.195.49:3000/avatars/${userId}_avatar.jpg`;
   
       }
-      let item_to_udate = {
-        ...userData,
-      }
+      
 
 
-      console.log("item_to_udate:", item_to_udate)
-      await this.userModel.findByIdAndUpdate(userId, item_to_udate);
+      console.log("item_to_udate:", userData)
+      await this.userModel.findByIdAndUpdate(userId, userData);
 
       return { message: 'Usuario actualizado con exito!' };
     } catch (error) {
