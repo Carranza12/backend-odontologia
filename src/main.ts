@@ -14,6 +14,11 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, 
   });
+  app.enableCors({
+    origin: 'http://127.0.0.1:4200',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, 
+  });
   await app.listen(3000 );
 }
 bootstrap();
