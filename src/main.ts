@@ -11,7 +11,7 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '5000mb' }));
   
   app.enableCors({
-    origin: 'http://148.212.195.49:4200',
+    origin: '148.212.195.49:4200',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, 
   });
