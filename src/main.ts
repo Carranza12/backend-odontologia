@@ -15,7 +15,7 @@ async function bootstrap() {
     credentials: true, 
   });
   app.enableCors({
-    origin: 'http://127.0.0.1:4200',
+    origin: 'http://148.212.195.49:4200',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, 
   });
