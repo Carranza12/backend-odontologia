@@ -204,7 +204,7 @@ export class UserAuthService {
         }
       });
 
-      body.profileImage = `148.212.195.49:3000/avatars/${userId}_avatar.jpg`;
+      body.profileImage = `148.212.195.49:3000/avatars/${userId}_avatar${path.extname(profileImage.filename)}`;
 
       await this.userModel.findByIdAndUpdate(userId, {
         ...body,
@@ -263,7 +263,7 @@ export class UserAuthService {
           }
         });
   
-        userData.profileImage = `148.212.195.49:3000/avatars/${userId}_avatar.jpg`;
+        userData.profileImage = `148.212.195.49:3000/avatars/${userId}_avatar${path.extname(profileImage.filename)}`;
   
       }
       let item_to_udate = {
