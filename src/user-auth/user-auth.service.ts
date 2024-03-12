@@ -230,22 +230,20 @@ export class UserAuthService {
       if (!existingUser) {
         throw new NotFoundException('Usuario no encontrado');
       }
-      console.log("userData:", userData.password)
+    
       let hash = "";
       const {  ...updatedUserData } = userData;
       if(!userData.password){
         delete userData.password
-        console.log("no existe la contra")
       }
-      if(userData.password ){
+      if(userData.password){
         console.log("si existe pass...")
-        hash = await bcrypt.hash(userData. password, 10);
+        hash = await bcrypt.hash(userData.password, 10);
         userData.password = hash
       }
      
-      console.log("profileImage:", profileImage)
+
       if (profileImage) {
-        console.log("si existe la foto de perfil")
         userData.profileImage = `148.212.195.49:3000/avatars/${profileImage.filename}`;
         const srcPath = path.join(__dirname, '../..','src', 'assets', 'avatars');
         const sourceFilePath = path.join(srcPath, profileImage.filename);
@@ -268,11 +266,15 @@ export class UserAuthService {
         userData.profileImage = `148.212.195.49:3000/avatars/${userId}_avatar.jpg`;
   
       }
-      
+      let item_to_udate = {
+        ...userData,
+        profileImage: userData.profileImage,
+      }
 
+    
 
-      console.log("item_to_udate:", userData)
-      await this.userModel.findByIdAndUpdate(userId, userData);
+      console.log("item_to_udate:", item_to_udate)
+      await this.userModel.findByIdAndUpdate(userId, item_to_udate);
 
       return { message: 'Usuario actualizado con exito!' };
     } catch (error) {
