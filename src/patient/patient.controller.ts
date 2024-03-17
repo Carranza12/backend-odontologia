@@ -14,6 +14,14 @@ export class PatientController {
   create(@Req() request: Request) {
     return this.patientService.create(request);
   }
+  @Get('/search')
+  searchPatient(@Req() request: Request) {
+    return this.patientService.searchPatients(request);
+  }
+  @Get('/dashboard-salud')
+  dashboardData(@Req() request: Request) {
+    return this.patientService.dashboard(request);
+  }
   @Post('/diagnostico')
   createDiagnostico(@Req() request: Request) {
     return this.patientService.createDiagnostico(request);
