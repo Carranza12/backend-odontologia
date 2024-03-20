@@ -14,6 +14,7 @@ import { UserTrabajador } from './schemas/user-trabajador.schema';
 import * as path from 'path';
 import * as fs from 'fs';
 import { createWriteStream } from 'fs';
+import mime from 'mime';
 
 @Injectable()
 export class UserAuthService {
@@ -165,6 +166,14 @@ export class UserAuthService {
 
       const hash = await bcrypt.hash(password, 10);
 
+      let allowedImageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'tif'];
+      const mimeType = mime.lookup(profileImage.filename);
+      const extension = mime.extension(mimeType);
+      console.log(extension.toLowerCase());
+      if (!allowedImageExtensions.includes(extension.toLowerCase())) {
+        throw new Error('La extensión del archivo no es compatible.');
+      }  
+
       if (profileImage) {
         body.profileImage = `http:localhost:3000/avatars/${profileImage.filename}`;
       }
@@ -195,7 +204,7 @@ export class UserAuthService {
         }
       });
 
-      body.profileImage = `http:localhost:3000/avatars/${userId}_avatar.jpg`;
+      body.profileImage = `http:localhost:3000/avatars/${userId}_avatar.${extension}`;
 
       await this.userModel.findByIdAndUpdate(userId, {
         ...body,

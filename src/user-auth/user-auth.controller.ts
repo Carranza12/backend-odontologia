@@ -13,6 +13,7 @@ import {
   ParamData,
   UseInterceptors,
   UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserAuthService } from './user-auth.service';
 import { User } from './schemas/user-auth.schema';
@@ -209,6 +210,32 @@ export class UserAuthController {
     }
   }
 
+  // @Get('user')
+  // @UseGuards(AuthGuard)
+  // async getUserByNameAndLastName(
+  //   @Req() request: any,
+  //   @Query('name') name: string,
+  //   @Query('last_name') last_name: string,
+  // ): Promise<User> {
+  //   try {
+  //     const user = await this.userAuthService.getUserById(request.user.userId);
+
+  //     if (user.role_default === 'superAdmin' || user.role_default === 'estudiante' || user.role_default === 'maestro') {
+  //       if (!name || !last_name) {
+  //         throw new BadRequestException('Se requieren tanto el nombre como el apellido para la búsqueda.');
+  //       }
+  //       return this.userAuthService.getUserByNameAndLastName(name, last_name);
+  //     }
+
+  //     throw new UnauthorizedException(
+  //       'No tienes permiso para acceder a esta ruta.',
+  //     );
+  //   } catch (error) {
+  //     throw new UnauthorizedException(
+  //       'No tienes permiso para acceder a esta ruta.',
+  //     );
+  //   }
+  // }
 
   @Get('user/email/:email')
   @UseGuards(AuthGuard)
