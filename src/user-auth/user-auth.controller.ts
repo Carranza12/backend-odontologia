@@ -209,7 +209,11 @@ export class UserAuthController {
       );
     }
   }
-
+  
+  @Get('/search')
+  searchUser(@Req() request: Request) {
+    return this.userAuthService.searchUsers(request);
+  }
   // @Get('user')
   // @UseGuards(AuthGuard)
   // async getUserByNameAndLastName(

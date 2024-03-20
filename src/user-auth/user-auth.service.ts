@@ -57,6 +57,43 @@ export class UserAuthService {
       throw new UnauthorizedException('An error occurred while logging in');
     }
   }
+
+  async searchUsers(req) {
+    try {
+      const {
+        name,
+        last_name,
+        email,
+        gender,
+        roles,
+      } = req.query;
+      let query: any = {};
+
+      if (name) {
+        query.nombre_completo = { $regex: new RegExp(name, 'i') };
+      }
+      if(last_name){
+        query.last_name = { $regex: new RegExp(last_name, 'i')};
+      }
+      if (email) {
+        query.email = { $regex: new RegExp(email, 'i') };
+      }
+      if (gender) {
+        query.gender = {$regex: new RegExp(gender, 'i'),};
+      }
+      if (roles) {
+        query.roles = {$regex: new RegExp(roles, 'i'),};
+      }
+
+      const usuarios = await this.userModel.find(query).limit(10);
+
+      console.log('usuarios:', usuarios);
+      return usuarios;
+    } catch (error) {
+      throw new Error('An error occurred while retrieving histories');
+    }
+  }
+
   async getUsers(page:number, limit: number): Promise<any> {
     try {
       const totalUsers = await this.userModel.countDocuments();
