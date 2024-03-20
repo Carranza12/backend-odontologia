@@ -174,7 +174,7 @@ export class UserAuthController {
       request.query.page = request.query.page ? request.query.page : 1;
       console.log("page:",  request.query)
       if (user.role_default === 'superAdmin') {
-        return this.userAuthService.getMaestros(request.query.page, 5);
+        return this.userAuthService.getEstudiantes(request.query.page, 5);
       }
 
       throw new UnauthorizedException(

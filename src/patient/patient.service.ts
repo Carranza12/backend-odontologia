@@ -119,7 +119,7 @@ export class PatientService {
       const newDiagnostico: any = await this.diagnosticoModel.create({
         ...body,
       });
-/* 
+      /* 
       const imagenes = [
         'odontograma',
         'evidencia1',
@@ -153,7 +153,7 @@ export class PatientService {
               const filename = `${body[imagen]}${extension}`;
               const filePath = path.join(uploadsDir, filename);
               await fs.writeFile(filePath, base64Data, 'base64');
-              const imgPath = `http:localhost:3000/historias_clinicas/${filename}`;
+            const imgPath = `http:localhost:3000/historias_clinicas/${filename}`;
               body[imagen] = imgPath;
               console.log('Archivo guardado con éxito:', imgPath);
             } catch (error) {
@@ -212,9 +212,9 @@ export class PatientService {
 
       await this.diagnosticoModel.updateOne(
         { _id: body.diagnostico_id },
-        { tratamiento_id: newTratamiento._id }
-    );
-    
+        { tratamiento_id: newTratamiento._id },
+      );
+
       return {
         message: 'Tratamiento creado exitosamente',
         item: newTratamiento,
@@ -308,17 +308,15 @@ export class PatientService {
       if (!tratamientoExistente) {
         throw new Error('Tratamiento no encontrado');
       }
-      
+
       tratamientoExistente.set(nuevosDatos);
       const tratamientoActualizado = await tratamientoExistente.save();
 
       return {
-       message: "exitoso"
+        message: 'exitoso',
       };
     } catch (error) {
-      throw new Error(
-        `Error al actualizar el tratamiento: ${error.message}`,
-      );
+      throw new Error(`Error al actualizar el tratamiento: ${error.message}`);
     }
   }
 
@@ -346,10 +344,82 @@ export class PatientService {
     }
   }
 
+  async searchPatients(req) {
+    try {
+      const {
+        nombre_completo,
+        telefono,
+        nombre_contacto_emergencia,
+        telefono_contacto_emergencia,
+      } = req.query;
+      let query: any = {};
+
+      if (nombre_completo) {
+        query.nombre_completo = { $regex: new RegExp(nombre_completo, 'i') };
+      }
+      if (telefono) {
+        const cleanedPhoneNumber = telefono.replace(/\D/g, '');
+        const phoneNumberRegex = cleanedPhoneNumber.split('').join('\\d*');
+        query.telefono = { $regex: new RegExp(phoneNumberRegex, 'i') };
+      }
+      if (nombre_contacto_emergencia) {
+        query.nombre_contacto_emergencia = {
+          $regex: new RegExp(nombre_contacto_emergencia, 'i'),
+        };
+      }
+      if (telefono_contacto_emergencia) {
+        const cleanedEmergencyPhoneNumber =
+          telefono_contacto_emergencia.replace(/\D/g, '');
+        const emergencyPhoneNumberRegex = cleanedEmergencyPhoneNumber
+          .split('')
+          .join('\\d*');
+        query.telefono_contacto_emergencia = {
+          $regex: new RegExp(emergencyPhoneNumberRegex, 'i'),
+        };
+      }
+
+      const pacientes = await this.patientModel.find(query).limit(10);
+
+      console.log('pacientes:', pacientes);
+      return pacientes;
+    } catch (error) {
+      throw new Error('An error occurred while retrieving histories');
+    }
+  }
+
+  async dashboard(req) {
+    try {
+      let data = {
+        totalHistoriasClinicas: 0,
+        totalPacientesDiabetes: 0,
+        totalPacientes: 0,
+        totalDiagnosticos: 0,
+        diagnosticosSinTratamiento: 0,
+        pacientesPorGenero: {
+          masculino: 0,
+          femenino: 0,
+        },
+        pacientesRecientes: []
+      };
+
+      data.totalHistoriasClinicas = await this.historiaClinicaModel.countDocuments();
+      data.totalPacientes = await this.patientModel.countDocuments();
+      data.totalPacientesDiabetes = await this.historiaClinicaModel.countDocuments({ Diabeticos: true });
+      data.totalDiagnosticos = await this.diagnosticoModel.countDocuments();
+      data.diagnosticosSinTratamiento = await this.diagnosticoModel.countDocuments({tratamiento_id: ""});
+      data.pacientesPorGenero.masculino = await this.patientModel.countDocuments({genero: "Masculino"});
+      data.pacientesPorGenero.femenino = await this.patientModel.countDocuments({genero: "Femenino"});
+      data.pacientesRecientes = await this.patientModel.find().limit(10);
+      return data;
+    } catch (error) {
+      throw new Error('An error occurred while retrieving histories');
+    }
+  }
+
   async getTratamientosByAlumno(alumno_id: string) {
     try {
       const tratamientos = await this.TratamientoModel.find({
-       alumno_id : alumno_id
+        alumno_id: alumno_id,
       });
       return tratamientos;
     } catch (error) {
@@ -456,7 +526,7 @@ export class PatientService {
   }
 
   async findDiagnostico(diagnostico_id: string) {
-    console.log("buscando diagnostico...")
+    console.log('buscando diagnostico...');
     const diagnostico: any = await this.diagnosticoModel.findOne({
       _id: diagnostico_id,
     });
@@ -476,7 +546,7 @@ export class PatientService {
   }
 
   async findTratamiento(tratamiento_id: string) {
-    console.log("buscando tratamiento...")
+    console.log('buscando tratamiento...');
     const tratamiento: any = await this.TratamientoModel.findOne({
       _id: tratamiento_id,
     });

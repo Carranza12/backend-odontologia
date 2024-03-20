@@ -35,10 +35,11 @@ export class UserAuthService {
       if (!user) {
         throw new NotFoundException('User not found');
       }
+      
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
         throw new UnauthorizedException('Invalid login credentials');
-      }
+      } 
       const payload = { userId: user._id };
       const token = this.jwtService.sign(payload);
       console.log('token:', token);
@@ -59,7 +60,11 @@ export class UserAuthService {
   async getUsers(page:number, limit: number): Promise<any> {
     try {
       const totalUsers = await this.userModel.countDocuments();
-      const totalPages = Math.ceil(totalUsers / limit);
+      const totalPages = totalUsers === 0 ? 1 : Math.ceil(totalUsers / limit);
+      console.log("limit:", limit)
+      console.log("totalUsers:", totalUsers)
+      console.log("totalPages:", totalPages)
+      console.log("page:", page)
       if (page < 1 || page > totalPages) {
         throw new Error('Página no válida');
       }
@@ -68,7 +73,7 @@ export class UserAuthService {
       .limit(limit)
       .exec();
       return {
-        items: users,
+        items: users || [],
         currentPage: page,
         totalPages: Array.from({ length: totalPages }, (_, i) => (i + 1).toString()),
       }
@@ -83,7 +88,11 @@ export class UserAuthService {
   async getMaestros(page:number, limit: number): Promise<any> {
     try {
       const totalUsers = await this.userModel.countDocuments({ role_default: 'maestro' });
-      const totalPages = Math.ceil(totalUsers / limit);
+      const totalPages = totalUsers === 0 ?  1 : Math.ceil(totalUsers / limit);
+      console.log("limit:", limit)
+      console.log("totalUsers:", totalUsers)
+      console.log("totalPages:", totalPages)
+      console.log("page:", page)
       if (page < 1 || page > totalPages) {
         throw new Error('Página no válida');
       }
@@ -92,7 +101,7 @@ export class UserAuthService {
         .limit(limit)
         .exec();
       return {
-        items: users,
+        items: users || [],
         currentPage: page,
         totalPages: Array.from({ length: totalPages }, (_, i) => (i + 1).toString()),
       }
@@ -108,7 +117,7 @@ export class UserAuthService {
   async getEstudiantes(page:number, limit: number): Promise<any> {
     try {
       const totalUsers = await this.userModel.countDocuments({ role_default: 'estudiante' });
-      const totalPages = Math.ceil(totalUsers / limit);
+      const totalPages = totalUsers === 0 ? 1 : Math.ceil(totalUsers / limit);
       if (page < 1 || page > totalPages) {
         throw new Error('Página no válida');
       }
@@ -175,7 +184,7 @@ export class UserAuthService {
       }  
 
       if (profileImage) {
-        body.profileImage = `http:localhost:3000/avatars/${profileImage.filename}`;
+        body.profileImage = `148.212.195.49:3000/avatars/${profileImage.filename}`;
       }
 
       const userModelResult = await this.userModel.create({
@@ -230,15 +239,21 @@ export class UserAuthService {
       if (!existingUser) {
         throw new NotFoundException('Usuario no encontrado');
       }
+    
       let hash = "";
-      const { password, ...updatedUserData } = userData;
-      if(password){
-        hash = await bcrypt.hash(password, 10);
+      const {  ...updatedUserData } = userData;
+      if(!userData.password){
+        delete userData.password
+      }
+      if(userData.password){
+        console.log("si existe pass...")
+        hash = await bcrypt.hash(userData.password, 10);
+        userData.password = hash
       }
      
 
       if (profileImage) {
-        userData.profileImage = `http:localhost:3000/avatars/${profileImage.filename}`;
+        userData.profileImage = `148.212.195.49:3000/avatars/${profileImage.filename}`;
         const srcPath = path.join(__dirname, '../..','src', 'assets', 'avatars');
         const sourceFilePath = path.join(srcPath, profileImage.filename);
         const destFilePath = path.join(srcPath, `${userId}_avatar${path.extname(profileImage.filename)}`);
@@ -257,7 +272,7 @@ export class UserAuthService {
           }
         });
   
-        userData.profileImage = `http:localhost:3000/avatars/${userId}_avatar.jpg`;
+        userData.profileImage = `148.212.195.49:3000/avatars/${userId}_avatar${path.extname(profileImage.filename)}`;
   
       }
       let item_to_udate = {
@@ -265,9 +280,9 @@ export class UserAuthService {
         profileImage: userData.profileImage,
       }
 
-      if(hash){
-        item_to_udate.password = hash;
-      }
+    
+
+      console.log("item_to_udate:", item_to_udate)
       await this.userModel.findByIdAndUpdate(userId, item_to_udate);
 
       return { message: 'Usuario actualizado con exito!' };

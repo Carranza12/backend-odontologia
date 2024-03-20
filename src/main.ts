@@ -9,11 +9,14 @@ async function bootstrap() {
   const app:any = await NestFactory.create(AppModule);
   app.use(json({ limit: '5000mb' }));
   app.use(urlencoded({ extended: true, limit: '5000mb' }));
-  app.enableCors({
-    origin: 'http://localhost:4200',
+  
+  /* app.enableCors({
+    origin: '148.212.195.49:4200',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, 
-  });
+  }); */
+  app.enableCors();
+  
   await app.listen(3000 );
 }
 bootstrap();
