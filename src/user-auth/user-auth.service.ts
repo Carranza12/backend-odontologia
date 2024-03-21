@@ -58,17 +58,15 @@ export class UserAuthService {
     }
   }
 
-  async searchUsers(req) {
+  async searchUsers(req, page:number, limit: number): Promise<any> {
     try {
       const {
         name,
         last_name,
         email,
-        gender,
         roles,
       } = req.query;
       let query: any = {};
-
       if (name) {
         query.nombre_completo = { $regex: new RegExp(name, 'i') };
       }
@@ -78,17 +76,26 @@ export class UserAuthService {
       if (email) {
         query.email = { $regex: new RegExp(email, 'i') };
       }
-      if (gender) {
-        query.gender = {$regex: new RegExp(gender, 'i'),};
-      }
       if (roles) {
         query.roles = {$regex: new RegExp(roles, 'i'),};
       }
 
-      const usuarios = await this.userModel.find(query).limit(10);
-
+      const totalUsers = await this.userModel.countDocuments(query);
+      const totalPages = totalUsers === 0 ? 1 : Math.ceil(totalUsers / limit);
+      if (page < 1 || page > totalPages) {
+        throw new Error('Página no válida');
+      }
+  
+      const usuarios = await this.userModel.find(query)
+        .skip((page - 1) * limit)
+        .limit(limit);
+  
       console.log('usuarios:', usuarios);
-      return usuarios;
+      return {
+        items: usuarios,
+        currentPage: page,
+        totalPages: totalPages
+      };
     } catch (error) {
       throw new Error('An error occurred while retrieving histories');
     }
@@ -104,7 +111,7 @@ export class UserAuthService {
       console.log("page:", page)
       if (page < 1 || page > totalPages) {
         throw new Error('Página no válida');
-      }
+      } 
       const users = await this.userModel.find({})
       .skip((page - 1) * limit)
       .limit(limit)
