@@ -407,8 +407,8 @@ export class PatientService {
       data.totalPacientesDiabetes = await this.historiaClinicaModel.countDocuments({ Diabeticos: true });
       data.totalDiagnosticos = await this.diagnosticoModel.countDocuments();
       data.diagnosticosSinTratamiento = await this.diagnosticoModel.countDocuments({tratamiento_id: ""});
-      data.pacientesPorGenero.masculino = await this.patientModel.countDocuments({genero: "Masculino"});
-      data.pacientesPorGenero.femenino = await this.patientModel.countDocuments({genero: "Femenino"});
+      data.pacientesPorGenero.masculino = await this.patientModel.countDocuments({genero: "m"});
+      data.pacientesPorGenero.femenino = await this.patientModel.countDocuments({genero: "f"});
       data.pacientesRecientes = await this.patientModel.find().limit(10);
       return data;
     } catch (error) {
