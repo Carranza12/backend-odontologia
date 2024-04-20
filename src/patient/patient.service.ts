@@ -399,16 +399,22 @@ export class PatientService {
           masculino: 0,
           femenino: 0,
         },
-        pacientesRecientes: []
+        pacientesRecientes: [],
       };
 
-      data.totalHistoriasClinicas = await this.historiaClinicaModel.countDocuments();
+      data.totalHistoriasClinicas =
+        await this.historiaClinicaModel.countDocuments();
       data.totalPacientes = await this.patientModel.countDocuments();
-      data.totalPacientesDiabetes = await this.historiaClinicaModel.countDocuments({ Diabeticos: true });
+      data.totalPacientesDiabetes =
+        await this.historiaClinicaModel.countDocuments({ Diabeticos: true });
       data.totalDiagnosticos = await this.diagnosticoModel.countDocuments();
-      data.diagnosticosSinTratamiento = await this.diagnosticoModel.countDocuments({tratamiento_id: ""});
-      data.pacientesPorGenero.masculino = await this.patientModel.countDocuments({genero: "m"});
-      data.pacientesPorGenero.femenino = await this.patientModel.countDocuments({genero: "f"});
+      data.diagnosticosSinTratamiento =
+        await this.diagnosticoModel.countDocuments({ tratamiento_id: '' });
+      data.pacientesPorGenero.masculino =
+        await this.patientModel.countDocuments({ genero: 'm' });
+      data.pacientesPorGenero.femenino = await this.patientModel.countDocuments(
+        { genero: 'f' },
+      );
       data.pacientesRecientes = await this.patientModel.find().limit(10);
       return data;
     } catch (error) {
@@ -416,12 +422,32 @@ export class PatientService {
     }
   }
 
-  async getTratamientosByAlumno(alumno_id: string) {
+  async getTratamientosByAlumno(
+    alumno_id: string,
+    page: number,
+    limit: number,
+  ) {
     try {
+      const totalTratamientos = await this.TratamientoModel.countDocuments();
+      const totalPages =
+        totalTratamientos === 0 ? 1 : Math.ceil(totalTratamientos / limit);
+      if (page < 1 || page > totalPages) {
+        throw new Error('Página no válida');
+      }
+
       const tratamientos = await this.TratamientoModel.find({
         alumno_id: alumno_id,
-      });
-      return tratamientos;
+      })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+      return {
+        items: tratamientos,
+        currentPage: page,
+        totalPages: Array.from({ length: totalPages }, (_, i) =>
+          (i + 1).toString(),
+        ),
+      };
     } catch (error) {
       throw new Error('An error occurred while retrieving histories');
     }
