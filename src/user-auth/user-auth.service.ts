@@ -93,24 +93,31 @@ export class UserAuthService {
     }
   }
 
-  async getMaestros(page: number, limit: number): Promise<any> {
+  async getMaestros(page: number, limit: number, filters: any): Promise<any> {
     try {
       const totalUsers = await this.userModel.countDocuments({
         role_default: 'maestro',
       });
       const totalPages = totalUsers === 0 ? 1 : Math.ceil(totalUsers / limit);
-      console.log('limit:', limit);
-      console.log('totalUsers:', totalUsers);
-      console.log('totalPages:', totalPages);
-      console.log('page:', page);
+
       if (page < 1 || page > totalPages) {
         throw new Error('Página no válida');
       }
-      const users = await this.userModel
-        .find({ role_default: 'maestro' })
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec();
+      let users = [];
+      if (Object.keys(filters).length > 0) {
+        users = await this.userModel
+          .find({ ...filters, role_default: 'maestro' })
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .exec();
+      } else {
+        users = await this.userModel
+          .find({ role_default: 'maestro' })
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .exec();
+      }
+
       return {
         items: users || [],
         currentPage: page,
@@ -126,7 +133,11 @@ export class UserAuthService {
     }
   }
 
-  async getEstudiantes(page: number, limit: number): Promise<any> {
+  async getEstudiantes(
+    page: number,
+    limit: number,
+    filters: any,
+  ): Promise<any> {
     try {
       const totalUsers = await this.userModel.countDocuments({
         role_default: 'estudiante',
@@ -135,11 +146,21 @@ export class UserAuthService {
       if (page < 1 || page > totalPages) {
         throw new Error('Página no válida');
       }
-      const users = await this.userModel
-        .find({ role_default: 'estudiante' })
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec();
+      let users = [];
+      if (Object.keys(filters).length > 0) {
+        users = await this.userModel
+          .find({ ...filters, role_default: 'estudiante' })
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .exec();
+      } else {
+        users = await this.userModel
+          .find({ role_default: 'estudiante' })
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .exec();
+      }
+
       return {
         items: users,
         currentPage: page,

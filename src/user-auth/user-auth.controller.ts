@@ -175,9 +175,33 @@ export class UserAuthController {
     try {
       const user = await this.userAuthService.getUserById(request.user.userId);;
       request.query.page = request.query.page ? request.query.page : 1;
-      console.log("page:",  request.query)
+      
+      const {
+        name,
+        last_name,
+        email,
+        role_default,
+      } = request.query;
+
+      let filters: any = {};
+
+      if (name) {
+        filters.name = { $regex: new RegExp(name, 'i') };
+      }
+
+      if (last_name) {
+        filters.last_name = { $regex: new RegExp(last_name, 'i') };
+      }
+
+      if (email) {
+        filters.email = { $regex: new RegExp(email, 'i') };
+      }
+      if (role_default) {
+        filters.role_default = { $regex: new RegExp(role_default, 'i') };
+      }
+
       if (user.role_default === 'superAdmin') {
-        return this.userAuthService.getMaestros(request.query.page, 5);
+        return this.userAuthService.getMaestros(request.query.page, 5, filters);
       }
 
       throw new UnauthorizedException(
@@ -197,8 +221,31 @@ export class UserAuthController {
       const user = await this.userAuthService.getUserById(request.user.userId);;
       request.query.page = request.query.page ? request.query.page : 1;
       console.log("page:",  request.query)
+      const {
+        name,
+        last_name,
+        email,
+        role_default,
+      } = request.query;
+
+      let filters: any = {};
+
+      if (name) {
+        filters.name = { $regex: new RegExp(name, 'i') };
+      }
+
+      if (last_name) {
+        filters.last_name = { $regex: new RegExp(last_name, 'i') };
+      }
+
+      if (email) {
+        filters.email = { $regex: new RegExp(email, 'i') };
+      }
+      if (role_default) {
+        filters.role_default = { $regex: new RegExp(role_default, 'i') };
+      }
       if (user.role_default === 'superAdmin') {
-        return this.userAuthService.getEstudiantes(request.query.page, 5);
+        return this.userAuthService.getEstudiantes(request.query.page, 5, filters);
       }
 
       throw new UnauthorizedException(
