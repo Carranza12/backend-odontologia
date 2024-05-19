@@ -169,6 +169,27 @@ export class UserAuthController {
     }
   }
 
+  @Get('users/all')
+  @UseGuards(AuthGuard)
+  async getAllUsers(@Req() request: any): Promise<User[]> {
+    try {
+      const user = await this.userAuthService.getUserById(request.user.userId);;
+      request.query.page = request.query.page ? request.query.page : 1;
+
+      if (user.role_default === 'superAdmin') {
+        return this.userAuthService.getAllUsers();
+      }
+
+      throw new UnauthorizedException(
+        'No tienes permiso para acceder a esta ruta.',
+      );
+    } catch (error) {
+      throw new UnauthorizedException(
+        'No tienes permiso para acceder a esta ruta.',
+      );
+    }
+  }
+
   @Get('users/maestros')
   @UseGuards(AuthGuard)
   async getMaestors(@Req() request: any): Promise<User[]> {

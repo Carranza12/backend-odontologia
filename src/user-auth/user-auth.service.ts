@@ -93,6 +93,23 @@ export class UserAuthService {
     }
   }
 
+  async getAllUsers(): Promise<any> {
+    try {
+     
+        const users = await this.userModel
+          .find()
+     
+      return {
+        items: users
+      };
+    } catch (error) {
+      this.logger.error(
+        `An error occurred while retrieving users: ${error.message}`,
+      );
+      throw new Error('An error occurred while retrieving users');
+    }
+  }
+
   async getMaestros(page: number, limit: number, filters: any): Promise<any> {
     try {
       const totalUsers = await this.userModel.countDocuments({
