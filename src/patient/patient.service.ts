@@ -16,6 +16,17 @@ import {
 import * as path from 'path';
 import { diagnostico, diagnosticoDocument } from './schemas/diagnostico.schema';
 import { Tratamiento, TratamientoDocument } from './schemas/tratamiento.schema';
+import {
+  perfilEstudiante,
+  perfilEstudianteDocument,
+} from 'src/estudiantes/schemas/perfil-estudiante.schema';
+import { perfilMaestro } from 'src/maestros/entities/perfil-maestro.entity';
+import { perfilMaestroDocument } from 'src/maestros/schemas/perfil-maestro.schema';
+import {
+  UserTrabajador,
+  UserTrabajadorDocument,
+} from 'src/user-auth/schemas/user-trabajador.schema';
+import { User, UserDocument } from 'src/user-auth/schemas/user-auth.schema';
 
 @Injectable()
 export class PatientService {
@@ -28,6 +39,16 @@ export class PatientService {
     private readonly diagnosticoModel: Model<diagnosticoDocument>,
     @InjectModel(Tratamiento.name)
     private readonly TratamientoModel: Model<TratamientoDocument>,
+    @InjectModel(perfilEstudiante.name)
+    private readonly perfilEstudianteModel: Model<perfilEstudianteDocument>,
+    @InjectModel(perfilMaestro.name)
+    private readonly perfilMaestroModel: Model<perfilMaestroDocument>,
+    @InjectModel(UserTrabajador.name)
+    private readonly trabajadoresModel: Model<UserTrabajadorDocument>,
+    @InjectModel(Tratamiento.name)
+    private readonly tratamientosModel: Model<TratamientoDocument>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
     private _user_auth: UserAuthService,
   ) {}
 
@@ -621,6 +642,72 @@ export class PatientService {
     }
   }
 
+  async respaldoByFormInJSON(nameForm: string) {
+    const formularios = [
+      {
+        name: 'diagnosticos',
+      },
+      {
+        name: 'historiaclinicas',
+      },
+      {
+        name: 'patients',
+      },
+      {
+        name: 'perfilestudiantes',
+      },
+      {
+        name: 'perfilmaestros',
+      },
+      {
+        name: 'trabajadores',
+      },
+      {
+        name: 'tratamientos',
+      },
+      {
+        name: 'users',
+      },
+    ];
+
+    const findFormulario = formularios.find((form) => form.name === nameForm);
+
+    console.log("findFormulario:", findFormulario)
+    if (!findFormulario) {
+      return {
+        message: 'Error al encontrar el formulario',
+        items: [],
+      };
+    }
+    let data;
+
+    if (findFormulario.name === 'diagnosticos') {
+      data = this.diagnosticoModel.find({});
+    }
+    if (findFormulario.name === 'historiaclinicas') {
+      data = this.historiaClinicaModel.find({});
+    }
+    if (findFormulario.name === 'patients') {
+      data = this.patientModel.find({});
+    }
+    if (findFormulario.name === 'perfilestudiantes') {
+      data = this.perfilEstudianteModel.find({});
+    }
+    if (findFormulario.name === 'perfilmaestros') {
+      data = this.perfilMaestroModel.find({});
+    }
+    if (findFormulario.name === 'trabajadores') {
+      data = this.userModel.find({role_default: "trabajador"});
+    }
+    if (findFormulario.name === 'tratamientos') {
+      data = this.tratamientosModel.find({});
+    }
+    if (findFormulario.name === 'users') {
+      data = this.userModel.find({});
+    }
+
+    return data;
+  }
   update(id: number, updatePatientDto: UpdatePatientDto) {
     return `This action updates a #${id} patient`;
   }

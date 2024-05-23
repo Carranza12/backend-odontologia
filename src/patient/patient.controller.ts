@@ -29,6 +29,7 @@ export class PatientController {
   searchPatient(@Req() request: Request) {
     return this.patientService.searchPatients(request);
   }
+  
   @Get('/dashboard-salud')
   dashboardData(@Req() request: Request) {
     return this.patientService.dashboard(request);
@@ -63,6 +64,10 @@ export class PatientController {
   @Get('/codigo/:codigo_id')
   findByCode(@Param('codigo_id') codigo_id: string) {
     return this.patientService.findHistoriaClinicaByCodigo(codigo_id);
+  }
+  @Get('/respaldo/:name_form')
+  respaldoByFormInJSON(@Param('name_form') name_form: string) {
+    return this.patientService.respaldoByFormInJSON(name_form);
   }
 
   @Get('/diagnostico-historia-clinica/:historia_clinica_id')

@@ -8,6 +8,11 @@ import { UserAuthModule } from 'src/user-auth/user-auth.module';
 import { HistoriaClinica, HistoriaClinicaSchema } from './schemas/historia_clinica.schema';
 import { diagnostico, diagnosticoSchema } from './schemas/diagnostico.schema';
 import { Tratamiento, TratamientoSchema } from './schemas/tratamiento.schema';
+import { perfilEstudiante, perfilEstudianteSchema } from 'src/estudiantes/schemas/perfil-estudiante.schema';
+import { perfilMaestro } from 'src/maestros/entities/perfil-maestro.entity';
+import { perfilMaestroSchema } from 'src/maestros/schemas/perfil-maestro.schema';
+import { UserTrabajador, UserTrabajadorSchema } from 'src/user-auth/schemas/user-trabajador.schema';
+import { User, UserSchema } from 'src/user-auth/schemas/user-auth.schema';
 
 @Module({
   controllers: [PatientController],
@@ -36,6 +41,32 @@ import { Tratamiento, TratamientoSchema } from './schemas/tratamiento.schema';
       {
         name: Tratamiento.name,
         schema: TratamientoSchema,
+      },
+    ]),
+
+    //AGREGAR LOS NUEVOS MODELOS 
+    MongooseModule.forFeature([
+      {
+        name: perfilEstudiante.name,
+        schema: perfilEstudianteSchema,
+      },
+    ]),
+    MongooseModule.forFeature([
+      {
+        name: perfilMaestro.name,
+        schema: perfilMaestroSchema,
+      },
+    ]),
+    MongooseModule.forFeature([
+      {
+        name: UserTrabajador.name,
+        schema: UserTrabajadorSchema,
+      },
+    ]),
+    MongooseModule.forFeature([
+      {
+        name: User.name,
+        schema: UserSchema,
       },
     ]),
   ]

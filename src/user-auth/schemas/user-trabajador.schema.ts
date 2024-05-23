@@ -32,5 +32,5 @@ export class UserTrabajador {
 
 }
 
-export type UserDocument = UserTrabajador & Document;
+export type UserTrabajadorDocument = UserTrabajador & Document;
 export const UserTrabajadorSchema = SchemaFactory.createForClass(UserTrabajador);
