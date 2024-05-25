@@ -30,7 +30,7 @@ import { env } from 'process';
       rootPath: join(__dirname, '..', 'src', 'assets', 'historias_clinicas','diagnosticos'), 
       serveRoot: '/historias_clinicas', 
     }),
-    MongooseModule.forRoot('mongodb://localhost/odontologia'),
+    MongooseModule.forRoot(env.MONGO_URI),
     UserAuthModule,
     PatientModule,
     maestrosModule,

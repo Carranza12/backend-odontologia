@@ -70,6 +70,11 @@ export class PatientController {
     return this.patientService.respaldoByFormInJSON(name_form);
   }
 
+  @Post('/importar/:collectionName')
+  importData(@Body() data: any, @Param('collectionName') collectionName: string) {
+    return this.patientService.importData(data, collectionName);
+  }
+
   @Get('/diagnostico-historia-clinica/:historia_clinica_id')
   findByHistoriaClinicaID(
     @Param('historia_clinica_id') historia_clinica_id: string,

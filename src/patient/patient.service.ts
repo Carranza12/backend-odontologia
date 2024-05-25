@@ -8,6 +8,7 @@ import { UserAuthService } from 'src/user-auth/user-auth.service';
 import { PatientDocument } from './schemas/patient.schema';
 import * as jwt from 'jsonwebtoken';
 import * as fs from 'fs-extra';
+import * as bcrypt from 'bcrypt';
 
 import {
   HistoriaClinica,
@@ -27,6 +28,7 @@ import {
   UserTrabajadorDocument,
 } from 'src/user-auth/schemas/user-trabajador.schema';
 import { User, UserDocument } from 'src/user-auth/schemas/user-auth.schema';
+import { ObjectId } from 'bson';
 
 @Injectable()
 export class PatientService {
@@ -672,7 +674,7 @@ export class PatientService {
 
     const findFormulario = formularios.find((form) => form.name === nameForm);
 
-    console.log("findFormulario:", findFormulario)
+    console.log('findFormulario:', findFormulario);
     if (!findFormulario) {
       return {
         message: 'Error al encontrar el formulario',
@@ -697,7 +699,7 @@ export class PatientService {
       data = this.perfilMaestroModel.find({});
     }
     if (findFormulario.name === 'trabajadores') {
-      data = this.userModel.find({role_default: "trabajador"});
+      data = this.userModel.find({ role_default: 'trabajador' });
     }
     if (findFormulario.name === 'tratamientos') {
       data = this.tratamientosModel.find({});
@@ -714,5 +716,223 @@ export class PatientService {
 
   remove(id: number) {
     return `This action removes a #${id} patient`;
+  }
+
+  async importData(data: any, collectionName: string): Promise<any> {
+    let respuesta;
+    if (collectionName === 'users') {
+      respuesta = await this.createUsers(data);
+    }
+    if (collectionName === 'diagnosticos') {
+      respuesta = await this.createCollection('diagnosticos', data);
+    }
+    if (collectionName === 'historiaclinicas') {
+      respuesta = await this.createCollection('historiaclinicas', data);
+    }
+    if (collectionName === 'patients') {
+      respuesta = await this.createCollection('patients', data);
+    }
+    if (collectionName === 'perfilestudiantes') {
+      respuesta = await this.createCollection('perfilestudiantes', data);
+    }
+    if (collectionName === 'perfilmaestros') {
+      respuesta = await this.createCollection('perfilmaestros', data);
+    }
+    if (collectionName === 'tratamientos') {
+      respuesta = await this.createCollection('tratamientos', data);
+    }
+    console.log("respuesta:", respuesta)
+    return {
+      message:
+        'Archivo subido correctamente, aquí tienes un resumen de tu información',
+      ...respuesta,
+    };
+  }
+
+  async createUsers(users: any) {
+    let registrosNoSubidos = [];
+    let registrosSubidos = [];
+
+    for await (const user of users) {
+      const userId = user._id['$oid'];
+      try {
+        const existingUser = await this.userModel.findById(
+          new ObjectId(userId),
+        );
+        if (existingUser) {
+          console.log(
+            `El usuario con ID ${userId} ya existe en la base de datos.`,
+          );
+          registrosNoSubidos.push({
+            id: userId,
+            nombre: user.name + ' ' + user.last_name,
+            email: user.email,
+          });
+        } else {
+          console.log(
+            `El usuario con ID ${userId} no existe en la base de datos.`,
+          );
+          const randomPassword = await this.generateRandomPassword(12);
+          const hashedPassword = await this.hashPassword(randomPassword);
+          const createdAt = new Date(user.createdAt['$date']);
+          const updatedAt = new Date(user.updatedAt['$date']);
+          const newUser = new this.userModel({
+            ...user,
+            _id: new ObjectId(userId),
+            password: hashedPassword,
+            createdAt,
+            updatedAt,
+          });
+          await newUser.save();
+          registrosSubidos.push({
+            id: userId,
+            nombre: user.name + ' ' + user.last_name,
+            email: user.email,
+            password: randomPassword,
+          });
+        }
+      } catch (error) {
+        console.error(
+          `Error al buscar el usuario con ID ${userId}: ${error.message}`,
+        );
+      }
+    }
+
+    return {
+      collection: 'users',
+      registrosNoSubidos,
+      registrosSubidos,
+    };
+  }
+
+  async createCollection(collection: string, items: any) {
+    let registrosNoSubidos = [];
+    let registrosSubidos = [];
+
+    for await (const item of items) {
+      const itemId = item._id['$oid'];
+      try {
+        let existingItem;
+        if (collection === 'diagnosticos')
+          existingItem = await this.diagnosticoModel.findById(
+            new ObjectId(itemId),
+          );
+        if (collection === 'historiasclinicas')
+          existingItem = await this.historiaClinicaModel.findById(
+            new ObjectId(itemId),
+          );
+        if (collection === 'patients')
+          existingItem = await this.patientModel.findById(new ObjectId(itemId));
+        if (collection === 'perfilestudiantes')
+          existingItem = await this.perfilEstudianteModel.findById(
+            new ObjectId(itemId),
+          );
+        if (collection === 'perfilmaestros')
+          existingItem = await this.perfilMaestroModel.findById(
+            new ObjectId(itemId),
+          );
+        if (collection === 'tratamientos')
+          existingItem = await this.tratamientosModel.findById(
+            new ObjectId(itemId),
+          );
+
+        if (existingItem) {
+          console.log(
+            `El item con ID ${itemId} ya existe en la base de datos.`,
+          );
+          registrosNoSubidos.push({
+            id: itemId,
+          });
+        } else {
+          console.log(
+            `El item con ID ${itemId} no existe en la base de datos.`,
+          );
+
+          const createdAt = new Date(item.createdAt['$date']);
+          const updatedAt = new Date(item.updatedAt['$date']);
+          let newItem;
+
+          if (collection === 'diagnosticos') {
+            newItem = new this.diagnosticoModel({
+              ...item,
+              _id: new ObjectId(itemId),
+              createdAt,
+              updatedAt,
+            });
+          }
+          if (collection === 'historiasclinicas') {
+            newItem = new this.historiaClinicaModel({
+              ...item,
+              _id: new ObjectId(itemId),
+              createdAt,
+              updatedAt,
+            });
+          }
+          if (collection === 'patients') {
+            newItem = new this.patientModel({
+              ...item,
+              _id: new ObjectId(itemId),
+              createdAt,
+              updatedAt,
+            });
+          }
+          if (collection === 'perfilestudiantes') {
+            newItem = new this.perfilEstudianteModel({
+              ...item,
+              _id: new ObjectId(itemId),
+              createdAt,
+              updatedAt,
+            });
+          }
+          if (collection === 'perfilmaestros') {
+            newItem = new this.perfilMaestroModel({
+              ...item,
+              _id: new ObjectId(itemId),
+              createdAt,
+              updatedAt,
+            });
+          }
+          if (collection === 'tratamientos') {
+            newItem = new this.tratamientosModel({
+              ...item,
+              _id: new ObjectId(itemId),
+              createdAt,
+              updatedAt,
+            });
+          }
+
+          await newItem.save();
+          registrosSubidos.push({
+            id: itemId,
+          });
+        }
+      } catch (error) {
+        console.error(
+          `Error al buscar el item con ID ${itemId}: ${error.message}`,
+        );
+      }
+    }
+
+    return {
+      collection,
+      registrosNoSubidos,
+      registrosSubidos,
+    };
+  }
+
+  async generateRandomPassword(length: number): Promise<string> {
+    const randomChars =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * randomChars.length);
+      password += randomChars.charAt(randomIndex);
+    }
+    return password;
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    const saltRounds = 10;
+    return bcrypt.hash(password, saltRounds);
   }
 }
