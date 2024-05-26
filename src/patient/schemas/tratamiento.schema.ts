@@ -34,19 +34,7 @@ export class Tratamiento {
     observaciones: string;
 
     @Prop({ required: false })
-    evidencia1: string;
-  
-    @Prop({ required: false })
-    evidencia2: string;
-  
-    @Prop({ required: false })
-    evidencia3: string;
-  
-    @Prop({ required: false })
-    evidencia4: string;
-  
-    @Prop({ required: false })
-    evidencia5: string;
+    evidencias: any[];
 
     
     @Prop({ required: false })
