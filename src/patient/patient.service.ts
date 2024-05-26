@@ -766,6 +766,9 @@ export class PatientService {
       {
         name: 'users',
       },
+      {
+        name: 'clinicas',
+      },
     ];
 
     const findFormulario = formularios.find((form) => form.name === nameForm);
@@ -787,6 +790,9 @@ export class PatientService {
     }
     if (findFormulario.name === 'patients') {
       data = this.patientModel.find({});
+    }
+    if (findFormulario.name === 'clinicas') {
+      data = this.clinicaModel.find({});
     }
     if (findFormulario.name === 'perfilestudiantes') {
       data = this.perfilEstudianteModel.find({});
@@ -830,6 +836,9 @@ export class PatientService {
     let respuesta;
     if (collectionName === 'users') {
       respuesta = await this.createUsers(data);
+    }
+    if (collectionName === 'clinicas') {
+      respuesta = await this.createCollection('clinicas', data);
     }
     if (collectionName === 'diagnosticos') {
       respuesta = await this.createCollection('diagnosticos', data);
@@ -923,6 +932,12 @@ export class PatientService {
           existingItem = await this.diagnosticoModel.findById(
             new ObjectId(itemId),
           );
+
+          if (collection === 'clinicas')
+            existingItem = await this.clinicaModel.findById(
+              new ObjectId(itemId),
+            );
+
         if (collection === 'historiaclinicas')
           existingItem = await this.historiaClinicaModel.findById(
             new ObjectId(itemId),
@@ -963,6 +978,14 @@ export class PatientService {
               _id: new ObjectId(itemId),
             });
           }
+
+          if (collection === 'clinicas') {
+            newItem = new this.clinicaModel({
+              ...item,
+              _id: new ObjectId(itemId),
+            });
+          }
+
           if (collection === 'historiaclinicas') {
             newItem = new this.historiaClinicaModel({
               ...item,
