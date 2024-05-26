@@ -86,19 +86,7 @@ export class diagnostico {
   paciente_referido_clinica: string;
 
   @Prop({ required: false })
-  evidencia1: string;
-
-  @Prop({ required: false })
-  evidencia2: string;
-
-  @Prop({ required: false })
-  evidencia3: string;
-
-  @Prop({ required: false })
-  evidencia4: string;
-
-  @Prop({ required: false })
-  evidencia5: string;
+  evidencias: any[];
 }
 
 export type diagnosticoDocument = diagnostico & Document;
