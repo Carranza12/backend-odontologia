@@ -27,6 +27,8 @@ import { fileFilter, renameImage } from './helpers/avatars.helper';
 export class UserAuthController {
   constructor(private readonly userAuthService: UserAuthService) {}
 
+ 
+
   @Post('register')
   @UseGuards(AuthGuard)
   @UseInterceptors(

@@ -8,11 +8,15 @@ import { secretKey } from './config';
 import { UserTrabajador, UserTrabajadorSchema } from './schemas/user-trabajador.schema';
 import { MulterModule } from '@nestjs/platform-express';
 import { AuthGuard } from './auth.guard';
+import { Clinica, clinicaSchema } from './schemas/clinica.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
     MongooseModule.forFeature([
       { name: UserTrabajador.name, schema: UserTrabajadorSchema },
+    ]),
+    MongooseModule.forFeature([
+      { name: Clinica.name, schema: clinicaSchema },
     ]),
     JwtModule.register({
       secret: secretKey.secret,

@@ -13,6 +13,7 @@ import { perfilMaestro } from 'src/maestros/entities/perfil-maestro.entity';
 import { perfilMaestroSchema } from 'src/maestros/schemas/perfil-maestro.schema';
 import { UserTrabajador, UserTrabajadorSchema } from 'src/user-auth/schemas/user-trabajador.schema';
 import { User, UserSchema } from 'src/user-auth/schemas/user-auth.schema';
+import { Clinica, clinicaSchema } from 'src/user-auth/schemas/clinica.schema';
 
 @Module({
   controllers: [PatientController],
@@ -68,6 +69,9 @@ import { User, UserSchema } from 'src/user-auth/schemas/user-auth.schema';
         name: User.name,
         schema: UserSchema,
       },
+    ]),
+    MongooseModule.forFeature([
+      { name: Clinica.name, schema: clinicaSchema },
     ]),
   ]
 })

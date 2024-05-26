@@ -10,6 +10,7 @@ import {
   Res,
   UseGuards,
   Put,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PatientService } from './patient.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
@@ -21,6 +22,98 @@ import { AuthGuard } from 'src/user-auth/auth.guard';
 export class PatientController {
   constructor(private readonly patientService: PatientService) {}
 
+  @Get('/clinicas/all')
+  async getAllClinicas(@Req() request: any): Promise<any[]> {
+    try {
+        return this.patientService.getAllClinicas();
+    } catch (error) {
+      console.log("ERROR", error)
+      throw new UnauthorizedException(
+        'No tienes permiso para acceder a esta ruta.',
+      );
+    }
+  }
+  
+  @Get('/clinicas')
+  async getClinicas(@Req() request: any): Promise<any[]> {
+    try {
+   
+      request.query.page = request.query.page ? request.query.page : 1;
+
+      const { name, level, telefono } = request.query;
+
+      let filters: any = {};
+
+      if (name) {
+        filters.name = { $regex: new RegExp(name, 'i') };
+      }
+
+      if (level) {
+        filters.level = { $regex: new RegExp(level, 'i') };
+      }
+
+      if (telefono) {
+        filters.telefono = { $regex: new RegExp(telefono, 'i') };
+      }
+
+      return this.patientService.getClinicas(request.query.page, 5, filters);
+
+    } catch (error) {
+      console.log("ERROR:", error)
+      throw new UnauthorizedException(
+        'No tienes permiso para acceder a esta ruta.',
+      );
+    }
+  }
+
+  @Get('clinicas/:id')
+  async getClinica(
+    @Req() request: Request,
+    @Param('id') id: string,
+  ): Promise<any> {
+    try {
+        return this.patientService.getClinicaById(id);
+  
+    } catch (error) {
+      throw new UnauthorizedException(
+        'No tienes permiso para acceder a esta ruta.',
+      );
+    }
+  }
+
+  @Put('/clinicas/:id')
+  async updateClinica(
+    @Param('id') userId: string,
+    @Body() body: any,
+    @Req() request: Request,
+  ): Promise<{ message: string }> {
+    try {
+      await this.patientService.updateClinica(userId, body);
+      return { message: 'Clinica actualizado con éxito.' };
+    } catch (error) {
+      throw new UnauthorizedException(
+        'No tienes permiso para editar clinicas.',
+      );
+    }
+  }
+
+  @Delete('/clinicas/:id')
+  async deleteClinica(
+    @Param('id') userId: string,
+    @Req() request: Request
+  ): Promise<{ message: string }> {
+    try {
+      await this.patientService.deleteClinica(userId);
+      return { message: 'Clinica eliminado con éxito.' };
+    } catch (error) {
+      throw new UnauthorizedException(
+        'No tienes permiso para eliminar clinica.',
+      );
+    }
+  }
+
+
+
   @Post()
   create(@Req() request: Request) {
     return this.patientService.create(request);
@@ -29,7 +122,7 @@ export class PatientController {
   searchPatient(@Req() request: Request) {
     return this.patientService.searchPatients(request);
   }
-  
+
   @Get('/dashboard-salud')
   dashboardData(@Req() request: Request) {
     return this.patientService.dashboard(request);
@@ -71,9 +164,19 @@ export class PatientController {
   }
 
   @Post('/importar/:collectionName')
-  importData(@Body() data: any, @Param('collectionName') collectionName: string) {
+  importData(
+    @Body() data: any,
+    @Param('collectionName') collectionName: string,
+  ) {
     return this.patientService.importData(data, collectionName);
   }
+
+  @Post('/clinica/create')
+  createClinica(@Body() data: any) {
+    return this.patientService.createClinica(data);
+  }
+
+  
 
   @Get('/diagnostico-historia-clinica/:historia_clinica_id')
   findByHistoriaClinicaID(

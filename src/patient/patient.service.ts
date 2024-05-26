@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -29,6 +29,7 @@ import {
 } from 'src/user-auth/schemas/user-trabajador.schema';
 import { User, UserDocument } from 'src/user-auth/schemas/user-auth.schema';
 import { ObjectId } from 'bson';
+import { Clinica, clinicaDocument } from 'src/user-auth/schemas/clinica.schema';
 
 @Injectable()
 export class PatientService {
@@ -51,6 +52,8 @@ export class PatientService {
     private readonly tratamientosModel: Model<TratamientoDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+    @InjectModel(Clinica.name)
+    private readonly clinicaModel: Model<clinicaDocument>,
     private _user_auth: UserAuthService,
   ) {}
 
@@ -349,6 +352,99 @@ export class PatientService {
       return patients;
     } catch (error) {
       throw new Error('An error occurred while retrieving patients');
+    }
+  }
+
+  async getClinicas(page: number, limit: number, filters: any): Promise<any> {
+    try {
+      const totalUsers = await this.clinicaModel.countDocuments();
+      const totalPages = totalUsers === 0 ? 1 : Math.ceil(totalUsers / limit);
+
+      if (page < 1 || page > totalPages) {
+        throw new Error('Página no válida');
+      }
+      let users = [];
+      if (Object.keys(filters).length > 0) {
+        users = await this.clinicaModel
+          .find(filters)
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .exec();
+      } else {
+        users = await this.clinicaModel
+          .find()
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .exec();
+      }
+      return {
+        items: users || [],
+        currentPage: page,
+        totalPages: Array.from({ length: totalPages }, (_, i) =>
+          (i + 1).toString(),
+        ),
+      };
+    } catch (error) {
+      console.error(
+        `An error occurred while retrieving users: ${error.message}`,
+      );
+      throw new Error('An error occurred while retrieving users');
+    }
+  }
+
+  async getClinicaById(id: string): Promise<any> {
+    try {
+      return await this.clinicaModel.findById(id).exec();
+    } catch (error) {
+      throw new NotFoundException('Clinica no encontrado');
+    }
+  }
+
+  async updateClinica(userId: string, userData: User): Promise<any> {
+    try {
+      const existingUser = await this.clinicaModel.findById(userId);
+
+      if (!existingUser) {
+        throw new NotFoundException('clinica no encontrado');
+      }
+     
+      let item_to_udate = {
+        ...userData,
+      };
+
+      console.log('item_to_udate:', item_to_udate);
+      await this.clinicaModel.findByIdAndUpdate(userId, item_to_udate);
+
+      return { message: 'Clinica actualizado con exito!' };
+    } catch (error) {
+      throw new Error('An error occurred while updating the user');
+    }
+  }
+
+  async deleteClinica(userId: string): Promise<void> {
+    try {
+      const existingUser = await this.clinicaModel.findById(userId);
+
+      if (!existingUser) {
+        throw new NotFoundException('Clinica no encontrado');
+      }
+      await this.clinicaModel.findByIdAndRemove(userId);
+    } catch (error) {
+      throw new Error('An error occurred while deleting the user');
+    }
+  }
+
+  async getAllClinicas(): Promise<any> {
+    try {
+      const users = await this.clinicaModel.find()
+      return {
+        items: users
+      };
+    } catch (error) {
+      console.error(
+        `An error occurred while retrieving users: ${error.message}`,
+      );
+      throw new Error('An error occurred while retrieving users');
     }
   }
 
@@ -718,6 +814,18 @@ export class PatientService {
     return `This action removes a #${id} patient`;
   }
 
+  async createClinica(data: any): Promise<any> {
+    const item = new this.clinicaModel({
+      ...data,
+    });
+    await item.save();
+
+    return {
+      message: "Creada correctamente",
+      item,
+    };
+  }
+
   async importData(data: any, collectionName: string): Promise<any> {
     let respuesta;
     if (collectionName === 'users') {
@@ -741,7 +849,7 @@ export class PatientService {
     if (collectionName === 'tratamientos') {
       respuesta = await this.createCollection('tratamientos', data);
     }
-    console.log("respuesta:", respuesta)
+    console.log('respuesta:', respuesta);
     return {
       message:
         'Archivo subido correctamente, aquí tienes un resumen de tu información',
@@ -754,7 +862,8 @@ export class PatientService {
     let registrosSubidos = [];
 
     for await (const user of users) {
-      const userId = user._id['$oid'];
+      const userId = user._id;
+
       try {
         const existingUser = await this.userModel.findById(
           new ObjectId(userId),
@@ -774,14 +883,11 @@ export class PatientService {
           );
           const randomPassword = await this.generateRandomPassword(12);
           const hashedPassword = await this.hashPassword(randomPassword);
-          const createdAt = new Date(user.createdAt['$date']);
-          const updatedAt = new Date(user.updatedAt['$date']);
+
           const newUser = new this.userModel({
             ...user,
             _id: new ObjectId(userId),
             password: hashedPassword,
-            createdAt,
-            updatedAt,
           });
           await newUser.save();
           registrosSubidos.push({
@@ -810,17 +916,18 @@ export class PatientService {
     let registrosSubidos = [];
 
     for await (const item of items) {
-      const itemId = item._id['$oid'];
+      const itemId = item._id;
       try {
         let existingItem;
         if (collection === 'diagnosticos')
           existingItem = await this.diagnosticoModel.findById(
             new ObjectId(itemId),
           );
-        if (collection === 'historiasclinicas')
+        if (collection === 'historiaclinicas')
           existingItem = await this.historiaClinicaModel.findById(
             new ObjectId(itemId),
           );
+
         if (collection === 'patients')
           existingItem = await this.patientModel.findById(new ObjectId(itemId));
         if (collection === 'perfilestudiantes')
@@ -848,56 +955,42 @@ export class PatientService {
             `El item con ID ${itemId} no existe en la base de datos.`,
           );
 
-          const createdAt = new Date(item.createdAt['$date']);
-          const updatedAt = new Date(item.updatedAt['$date']);
           let newItem;
 
           if (collection === 'diagnosticos') {
             newItem = new this.diagnosticoModel({
               ...item,
               _id: new ObjectId(itemId),
-              createdAt,
-              updatedAt,
             });
           }
-          if (collection === 'historiasclinicas') {
+          if (collection === 'historiaclinicas') {
             newItem = new this.historiaClinicaModel({
               ...item,
               _id: new ObjectId(itemId),
-              createdAt,
-              updatedAt,
             });
           }
           if (collection === 'patients') {
             newItem = new this.patientModel({
               ...item,
               _id: new ObjectId(itemId),
-              createdAt,
-              updatedAt,
             });
           }
           if (collection === 'perfilestudiantes') {
             newItem = new this.perfilEstudianteModel({
               ...item,
               _id: new ObjectId(itemId),
-              createdAt,
-              updatedAt,
             });
           }
           if (collection === 'perfilmaestros') {
             newItem = new this.perfilMaestroModel({
               ...item,
               _id: new ObjectId(itemId),
-              createdAt,
-              updatedAt,
             });
           }
           if (collection === 'tratamientos') {
             newItem = new this.tratamientosModel({
               ...item,
               _id: new ObjectId(itemId),
-              createdAt,
-              updatedAt,
             });
           }
 
