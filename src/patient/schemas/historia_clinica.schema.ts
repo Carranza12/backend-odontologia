@@ -326,6 +326,8 @@ export class HistoriaClinica {
   @Prop({ required: false })
   antecedentes_hereditarios: string;
   
+  @Prop({ required: false })
+  isFirmadaAutorizacion: boolean;
   
 }
 
