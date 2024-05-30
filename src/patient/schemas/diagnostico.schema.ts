@@ -98,7 +98,7 @@ export class diagnostico {
   conducta_reticente: false;
 
   @Prop({ required: false })
-  conducta_hipocondriaco: false;
+  conducta_agresiva: false;
   
   @Prop({ required: false })
   conducta_desinformado: false;
