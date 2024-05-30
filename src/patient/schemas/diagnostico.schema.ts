@@ -24,7 +24,7 @@ export class diagnostico {
   @Prop({ required: false })
   motivos_de_la_consulta: string;
 
-  
+
   @Prop({ required: false })
   comentarios_sobre_la_consulta: string;
 
@@ -87,6 +87,24 @@ export class diagnostico {
 
   @Prop({ required: false })
   evidencias: any[];
+
+  @Prop({ required: false })
+  conducta_cooperativo: false;
+
+  @Prop({ required: false })
+  conducta_ansioso: false;
+
+  @Prop({ required: false })
+  conducta_reticente: false;
+
+  @Prop({ required: false })
+  conducta_hipocondriaco: false;
+  
+  @Prop({ required: false })
+  conducta_desinformado: false;
+
+  @Prop({ required: false })
+  conducta_acosador: false;
 }
 
 export type diagnosticoDocument = diagnostico & Document;
