@@ -6,6 +6,9 @@ export class Patient {
   @Prop({ required: true })
   nombre_completo: string;
 
+  @Prop({ required: true })
+  fotografia: string;
+
   @Prop({ required: false })
   fecha_de_nacimiento: string;
 
@@ -47,6 +50,7 @@ export class Patient {
 
   @Prop({ required: false })
   telefono_contacto_emergencia: string;
+  
 }
 
 export type PatientDocument = Patient & Document;

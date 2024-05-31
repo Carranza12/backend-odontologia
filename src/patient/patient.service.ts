@@ -59,6 +59,7 @@ export class PatientService {
 
   async create(req: any) {
     const { body } = req;
+    console.log("BODY:", body)
 
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
