@@ -355,6 +355,24 @@ export class PatientService {
     }
   }
 
+  async findAutocomplete(name?:string) {
+    try {
+
+      let patients;
+      if (name !="todos") {
+        console.log("name:", name)
+        patients = await this.patientModel.find({ nombre_completo: { $regex: name, $options: 'i' } }).limit(10);
+        console.log("pacientes a enviar al front:", patients)
+      } else {
+        patients = await this.patientModel.find({}).limit(10);
+        console.log("pacientes a enviar al front:", patients)
+      }
+      return patients;
+    } catch (error) {
+      throw new Error('An error occurred while retrieving patients');
+    }
+  }
+
   async getClinicas(page: number, limit: number, filters: any): Promise<any> {
     try {
       const totalUsers = await this.clinicaModel.countDocuments();

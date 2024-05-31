@@ -149,6 +149,10 @@ export class PatientController {
   findAll() {
     return this.patientService.findAll();
   }
+  @Get("/autocomplete/:name")
+  findAutocompleteAll(@Param('name') name?: string) {
+    return this.patientService.findAutocomplete(name);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
