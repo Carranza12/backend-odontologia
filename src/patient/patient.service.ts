@@ -594,6 +594,14 @@ export class PatientService {
   findOne(id: number) {
     return `This action returns a #${id} patient`;
   }
+  async findByName(nombre_completo: string) {
+    const patient = await this.patientModel.findOne({ nombre_completo }).exec();
+    if (!patient) {
+      return null
+    }
+    console.log("paciente ya existe:", patient)
+    return patient;
+  }
 
   async findHistoriaClinicaByCodigo(codigo_id: string) {
     console.log('COPDIGO IDD:', codigo_id);

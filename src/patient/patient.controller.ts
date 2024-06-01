@@ -22,6 +22,13 @@ import { AuthGuard } from 'src/user-auth/auth.guard';
 export class PatientController {
   constructor(private readonly patientService: PatientService) {}
 
+  @Get('/validate/:name')
+  findByName(@Param('name') name: string) {
+    console.log("ejecutando...")
+    return this.patientService.findByName(name);
+  }
+
+
   @Get('/clinicas/all')
   async getAllClinicas(@Req() request: any): Promise<any[]> {
     try {
@@ -111,8 +118,7 @@ export class PatientController {
       );
     }
   }
-
-
+ 
 
   @Post()
   create(@Req() request: Request) {
@@ -158,6 +164,8 @@ export class PatientController {
   findOne(@Param('id') id: string) {
     return this.patientService.findOne(+id);
   }
+
+  
   @Get('/codigo/:codigo_id')
   findByCode(@Param('codigo_id') codigo_id: string) {
     return this.patientService.findHistoriaClinicaByCodigo(codigo_id);
